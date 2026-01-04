@@ -19,3 +19,11 @@ class MeadiaListScreen extends StatelessWidget {
     return Scaffold(body: Center(child: Text("data")));
   }
 }
+
+// TODO: Need to decide entity
+//       1. song title
+//       2. artist name
+//       3. album art
+//       4. album name
+// TODO: Then define repository
+// TODO: Then go for lower level implementation
