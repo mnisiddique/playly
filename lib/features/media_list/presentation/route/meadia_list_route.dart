@@ -20,10 +20,8 @@ class MeadiaListScreen extends StatelessWidget {
   }
 }
 
-// TODO: Need to decide entity
-//       1. song title
-//       2. artist name
-//       3. album art
-//       4. album name
-// TODO: Then define repository
-// TODO: Then go for lower level implementation
+// TODO: Implement audio media repo
+// TODO: Define and  implement audio artwork repo
+// TODO: Add necessary permission
+// TODO: Decide next todo
+
