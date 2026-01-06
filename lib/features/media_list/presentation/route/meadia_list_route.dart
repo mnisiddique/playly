@@ -4,9 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:playly/core/app/navigation/named_route.dart';
 import 'package:playly/core/presentation/widget/loading_widget.dart';
-import 'package:playly/features/media_list/domain/entity/audio_media.dart';
+import 'package:playly/features/media_list/presentation/route/audio_list_widget.dart';
 import 'package:playly/features/media_list/presentation/route/providers.dart';
 import 'package:playly/features/media_list/presentation/songs/songs_cubit.dart';
+import 'package:playly/res/index.dart';
 
 class MediaListRoute extends GoRoute {
   MediaListRoute()
@@ -37,6 +38,7 @@ class _MeadiaListScreenState extends State<MeadiaListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorGen.kCloudMist,
       body: BlocBuilder<SongsCubit, SongsState>(
         builder: (context, state) {
           return state.when(
@@ -85,24 +87,4 @@ class NoAudioWidget extends StatelessWidget {
   }
 }
 
-class AudioListWidget extends StatelessWidget {
-  final List<AudioMediaEntity> songs;
-  const AudioListWidget({super.key, required this.songs});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: songs.length,
-      itemBuilder: (ctx, id) {
-        final song = songs[id];
-        return ListTile(title: Text(song.title), subtitle: Text(song.artist));
-      },
-    );
-  }
-}
-
-
-// TODO: Define and  implement audio artwork repo
-
-// TODO: Decide next todo
 
