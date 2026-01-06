@@ -41,7 +41,7 @@ class _MeadiaListScreenState extends State<MeadiaListScreen> {
         builder: (context, state) {
           return state.when(
             initial: () => SizedBox.shrink(),
-            loading: () => LoadingWidget(),
+            loading: () => Center(child: LoadingWidget()),
             loaded: (songs) => AudioListWidget(songs: songs),
             noSong: () => NoAudioWidget(),
             noPermission: (isPermament) =>
