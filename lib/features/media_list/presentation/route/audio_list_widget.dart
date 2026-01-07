@@ -20,21 +20,27 @@ class AudioListWidget extends StatelessWidget {
 
         return true;
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: nk16, vertical: nk08),
-        child: ListView.separated(
-          separatorBuilder: (ctx, id) => Divider(
-            indent: nk88, // Aligns perfectly with the start of the song title
-            endIndent: nk00,
-            thickness: nk0pt5,
-            color: Theme.of(context).colorScheme.outlineVariant,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: nk16, vertical: nk08),
+              child: ListView.separated(
+                separatorBuilder: (ctx, id) => Divider(
+                  indent: nk88, // Aligns perfectly with the start of the song title
+                  endIndent: nk00,
+                  thickness: nk0pt5,
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
+                itemCount: songs.length,
+                itemBuilder: (ctx, id) {
+                  final song = songs[id];
+                  return AudioListTile(song: song);
+                },
+              ),
+            ),
           ),
-          itemCount: songs.length,
-          itemBuilder: (ctx, id) {
-            final song = songs[id];
-            return AudioListTile(song: song);
-          },
-        ),
+        ],
       ),
     );
   }
@@ -114,6 +120,27 @@ class AudioArtWorkWidget extends StatelessWidget {
   }
 }
 
+
+class SearchFab extends StatelessWidget {
+  const SearchFab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<
+      UserScrollNotificationCubit,
+      UserScrollNotificationState
+    >(
+      builder: (context, state) {
+        return FloatingActionButton.extended(
+          label: Text(vskSearchMusic),
+          isExtended: state.when(initial: () => true, scrolling: () => false),
+          onPressed: () {},
+          icon: Icon(Icons.search),
+        );
+      },
+    );
+  }
+}
 
 /**
  * 1. When to choose circular avatar and when to choose square avatar for list item
