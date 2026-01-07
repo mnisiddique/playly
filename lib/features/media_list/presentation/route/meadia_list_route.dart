@@ -6,7 +6,7 @@ import 'package:playly/core/app/navigation/named_route.dart';
 import 'package:playly/core/presentation/widget/loading_widget.dart';
 import 'package:playly/features/media_list/presentation/route/audio_list_widget.dart';
 import 'package:playly/features/media_list/presentation/route/providers.dart';
-import 'package:playly/features/media_list/presentation/songs/songs_cubit.dart';
+import 'package:playly/features/media_list/presentation/cubit/songs/songs_cubit.dart';
 import 'package:playly/res/index.dart';
 
 class MediaListRoute extends GoRoute {
@@ -53,6 +53,10 @@ class _MeadiaListScreenState extends State<MeadiaListScreen> {
           },
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(Icons.search),
+      ),
     );
   }
 }
@@ -88,5 +92,3 @@ class NoAudioWidget extends StatelessWidget {
     return Center(child: Text("No Audio files"));
   }
 }
-
-
