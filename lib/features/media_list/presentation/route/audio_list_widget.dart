@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:on_audio_query_pluse/on_audio_query.dart';
+import 'package:playly/core/app/extension/string/casing.dart';
 import 'package:playly/features/media_list/domain/entity/audio_media.dart';
 import 'package:playly/features/media_list/presentation/model/audio_model.dart';
 import 'package:playly/res/index.dart';
@@ -13,7 +13,13 @@ class AudioListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: nk16, vertical: nk08),
-      child: ListView.builder(
+      child: ListView.separated(
+        separatorBuilder: (ctx, id) => Divider(
+          indent: nk88, // Aligns perfectly with the start of the song title
+          endIndent: nk00,
+          thickness: nk0pt5,
+          color: Theme.of(context).colorScheme.outlineVariant,
+        ),
         itemCount: songs.length,
         itemBuilder: (ctx, id) {
           final song = songs[id];
@@ -31,81 +37,40 @@ class AudioListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: Container(
-        padding: EdgeInsets.all(nk08),
-        decoration: BoxDecoration(
-          color: ColorGen.kWhiteColor,
-          borderRadius: BorderRadius.all(Radius.circular(nk10)),
-          // border: Border.symmetric(horizontal: BorderSide(width: nk0pt5, color: ColorGen.kSilverFog)),
-          border: Border.all(width: nk0pt5, color: ColorGen.kSilverFog),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AudioArtWorkWidget(song: song),
-            Gap(nk08),
-            Expanded(child: AudioDataWidget(song: song)),
-          ],
+    return ListTile(
+      isThreeLine: true,
+      leading: AudioArtWorkWidget(song: song),
+      tileColor: Colors.white,
+      title: Text(
+        song.title,
+        maxLines: nkInt01,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          color: ColorGen.kCarbonBlue,
+          letterSpacing: nkNegative0pt31,
         ),
       ),
-    );
-  }
-}
-
-class AudioDataWidget extends StatelessWidget {
-  final AudioMediaEntity song;
-  const AudioDataWidget({super.key, required this.song});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          song.title,
-          maxLines: nkInt01,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: ColorGen.kCarbonBlue,
-            letterSpacing: nkNegative0pt31,
-          ),
-        ),
-        Text(
-          song.artistLabel,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: ColorGen.kCharcolBlue,
-            letterSpacing: nkNegative0pt15,
-          ),
-        ),
-        Text(
-          song.albumLabel,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: ColorGen.kCharcolBlue,
-            letterSpacing: nkNegative0pt15,
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              song.sizeLabel,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColorGen.kCharcolBlue,
-                letterSpacing: nkNegative0pt15,
-              ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            song.artistLabel.toTitleCase(),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: ColorGen.kCharcolBlue,
+              letterSpacing: nkNegative0pt15,
             ),
-            Text(
-              song.durationLabel,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColorGen.kElectricBlue,
-                letterSpacing: nkNegative0pt15,
-              ),
+          ),
+          Text(
+            song.albumLabel.toTitleCase(),
+            maxLines: nkInt01,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: ColorGen.kCharcolBlue,
+              letterSpacing: nkNegative0pt15,
             ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -119,13 +84,40 @@ class AudioArtWorkWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return QueryArtworkWidget(
       id: song.id,
-      artworkHeight: nk56,
-      artworkWidth: nk56,
       type: ArtworkType.AUDIO,
-      nullArtworkWidget: CircleAvatar(
-        radius: nk28,
-        child: ClipOval(child: AssetGen.artwork.noArtwork.image(height: nk56, width: nk56, fit: BoxFit.cover)),
+      nullArtworkWidget: Container(
+        height: nk56,
+        width: nk56,
+        decoration: BoxDecoration(
+          border: Border.all(width: nk0pt5, color: Colors.red),
+          borderRadius: BorderRadius.circular(nk08),
+        ),
+        child: Icon(Icons.music_note_rounded),
       ),
     );
   }
 }
+
+
+/**
+ * 1. When to choose circular avatar and when to choose square avatar for list item
+ * 2. Does M3 suggests square avatar alaways for list item? Is there any suggestion for music item?
+ * Ans: 
+ *      Feature,Design Choice,M3 Logic
+        Shape,Rounded Square,"Identifies the item as ""Media Content."""
+        Corner Radius,8dp,"Softens the UI and aligns with M3 ""Small"" shapes."
+        Size,56x56dp,Standard for two-line list items (Title + Artist).
+        Placeholder,Colored Square + Icon,"Maintains the ""Content"" shape even when art is missing."
+ * 
+ * 3. In case of showing music list item as they are not grouped by album should i use rounded corner?
+ *    Ans: No, keep it edge to edge
+ * 4. Should i use elevation for list item?
+ *    Ans:- no, 
+ * 5. Should i use border for list item?
+ *    Ans: The Row (The "Line" between items): Instead of a border around the whole item, use a Horizontal Divider.
+          M3 Pro-Tip: The divider should be "inset." It should start where the text starts, not under the album art. This keeps the list looking "connected" but organized.
+          The Thumbnail: If an album cover is very white/light and your app background is also white, the image might "bleed" into the background. In this specific case, a very thin 0.5dp inner stroke (using surfaceVariant color) around the image helps define its shape.
+ * 
+ * Additional question
+ * 1. what is tonal elevation
+ */

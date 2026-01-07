@@ -39,17 +39,19 @@ class _MeadiaListScreenState extends State<MeadiaListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorGen.kCloudMist,
-      body: BlocBuilder<SongsCubit, SongsState>(
-        builder: (context, state) {
-          return state.when(
-            initial: () => SizedBox.shrink(),
-            loading: () => Center(child: LoadingWidget()),
-            loaded: (songs) => AudioListWidget(songs: songs),
-            noSong: () => NoAudioWidget(),
-            noPermission: (isPermament) =>
-                PermissionDeniedWidget(isPermment: isPermament),
-          );
-        },
+      body: SafeArea(
+        child: BlocBuilder<SongsCubit, SongsState>(
+          builder: (context, state) {
+            return state.when(
+              initial: () => SizedBox.shrink(),
+              loading: () => Center(child: LoadingWidget()),
+              loaded: (songs) => AudioListWidget(songs: songs),
+              noSong: () => NoAudioWidget(),
+              noPermission: (isPermament) =>
+                  PermissionDeniedWidget(isPermment: isPermament),
+            );
+          },
+        ),
       ),
     );
   }

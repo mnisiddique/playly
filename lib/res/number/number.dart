@@ -32,6 +32,7 @@ const double nk72 = 72.0;
 const double nk76 = 76.0;
 const double nk80 = 80.0;
 const double nk84 = 84.0;
+const double nk88 = 88.0;
 const double nk90 = 90.0;
 const double nk96 = 96.0;
 const double nk100 = 100.0;
