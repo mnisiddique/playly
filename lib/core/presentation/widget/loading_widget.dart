@@ -12,7 +12,7 @@ class LoadingWidget extends StatelessWidget {
     this.size = nk48,
     this.trackGap = nk04,
     this.color,
-    this.trackColor = ColorGen.kLavendarMist,
+    this.trackColor = ColorGen.kCharcolBlue,
   });
 
   @override

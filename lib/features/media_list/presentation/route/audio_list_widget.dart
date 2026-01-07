@@ -89,7 +89,10 @@ class AudioArtWorkWidget extends StatelessWidget {
         height: nk56,
         width: nk56,
         decoration: BoxDecoration(
-          border: Border.all(width: nk0pt5, color: Colors.red),
+          border: Border.all(
+            width: nk0pt5,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          ),
           borderRadius: BorderRadius.circular(nk08),
         ),
         child: Icon(Icons.music_note_rounded),

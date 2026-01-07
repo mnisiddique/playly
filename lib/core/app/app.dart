@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:playly/core/app/extension/app_theme.dart';
 import 'package:playly/core/app/navigation/app_router.dart';
 import 'package:playly/res/index.dart';
 
@@ -11,7 +12,7 @@ class PlaylyApp extends StatelessWidget {
       title: vskAppAnme,
       routerConfig: AppRouter().config,
       debugShowCheckedModeBanner: false,
-      // theme: context.appThemeWithClient(state),
+      theme: context.appTheme,
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(
           context,

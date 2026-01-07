@@ -4,25 +4,13 @@ import 'package:playly/res/index.dart';
 
 extension AppTheme on BuildContext {
   ThemeData get appTheme {
-    return  ThemeData(
-      dialogTheme: DialogThemeData(
-        backgroundColor: ColorGen.kAlertBackground,
-        actionsPadding: EdgeInsets.only(right: nk16, bottom: nk16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(nk28),
-        ),
-        titleTextStyle: Theme.of(this).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w400,
-              color: ColorGen.kSecondaryDarkGrey,
-            ),
-        contentTextStyle: Theme.of(this).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w400,
-              color: ColorGen.kSecondaryGrey,
-            ),
-      ),
+    return ThemeData(
       colorScheme: ColorScheme.fromSeed(
-        seedColor: ColorGen.kJadeGreen,
-        primary: ColorGen.kJadeGreen,
+        seedColor: ColorGen.kElectricIndigo,
+        surface: ColorGen.kCloudMist, // Your background spec
+        onSurface: ColorGen.kCarbonBlue, // Your title spec
+        onSurfaceVariant: ColorGen.kCharcolBlue, // Your subtitle spec
+        brightness: Brightness.light,
       ),
       fontFamily: GoogleFonts.roboto().fontFamily,
       useMaterial3: true,
