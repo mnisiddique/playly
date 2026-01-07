@@ -85,6 +85,9 @@ class AudioArtWorkWidget extends StatelessWidget {
     return QueryArtworkWidget(
       id: song.id,
       type: ArtworkType.AUDIO,
+      artworkHeight: nk56,
+      artworkWidth: nk56,
+      artworkBorder: BorderRadius.circular(nk08),
       nullArtworkWidget: Container(
         height: nk56,
         width: nk56,
