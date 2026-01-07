@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:on_audio_query_pluse/on_audio_query.dart';
 import 'package:playly/core/app/extension/string/casing.dart';
 import 'package:playly/features/media_list/domain/entity/audio_media.dart';
+import 'package:playly/features/media_list/presentation/cubit/user_scroll_notification/user_scroll_notification_cubit.dart';
 import 'package:playly/features/media_list/presentation/model/audio_model.dart';
 import 'package:playly/res/index.dart';
 
@@ -12,6 +14,12 @@ class AudioListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return NotificationListener<UserScrollNotification>(
+      onNotification: (notification) {
+        final notificationCubit = context.read<UserScrollNotificationCubit>();
+        notificationCubit.onScrollNotification(notification);
+
+        return true;
+      },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: nk16, vertical: nk08),
         child: ListView.separated(

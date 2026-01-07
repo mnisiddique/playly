@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:playly/core/app/navigation/named_route.dart';
 import 'package:playly/core/presentation/widget/loading_widget.dart';
+import 'package:playly/features/media_list/presentation/cubit/user_scroll_notification/user_scroll_notification_cubit.dart';
 import 'package:playly/features/media_list/presentation/route/audio_list_widget.dart';
 import 'package:playly/features/media_list/presentation/route/providers.dart';
 import 'package:playly/features/media_list/presentation/cubit/songs/songs_cubit.dart';
@@ -53,10 +54,35 @@ class _MeadiaListScreenState extends State<MeadiaListScreen> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.search),
+      floatingActionButton: BlocBuilder<SongsCubit, SongsState>(
+        builder: (context, state) {
+          return state.maybeWhen(
+            orElse: () => SizedBox.shrink(),
+            loaded: (_) => SearchFab(),
+          );
+        },
       ),
+    );
+  }
+}
+
+class SearchFab extends StatelessWidget {
+  const SearchFab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<
+      UserScrollNotificationCubit,
+      UserScrollNotificationState
+    >(
+      builder: (context, state) {
+        return FloatingActionButton.extended(
+          label: Text(vskSearchMusic),
+          isExtended: state.when(initial: () => true, scrolling: () => false),
+          onPressed: () {},
+          icon: Icon(Icons.search),
+        );
+      },
     );
   }
 }

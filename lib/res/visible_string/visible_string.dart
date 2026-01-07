@@ -4,3 +4,4 @@ const String vskUnknownAlbum = 'Unknown Album';
 const String vskDuration = 'Duration';
 const String vskMB = 'MB';
 const String vskEmpty = '';
+const String vskSearchMusic = 'Search Music';
