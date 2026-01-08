@@ -23,23 +23,22 @@ class AudioListWidget extends StatelessWidget {
       child: Stack(
         children: [
           Positioned.fill(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: nk16, vertical: nk08),
-              child: ListView.separated(
-                separatorBuilder: (ctx, id) => Divider(
-                  indent: nk88, // Aligns perfectly with the start of the song title
-                  endIndent: nk00,
-                  thickness: nk0pt5,
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                ),
-                itemCount: songs.length,
-                itemBuilder: (ctx, id) {
-                  final song = songs[id];
-                  return AudioListTile(song: song);
-                },
+            child: ListView.separated(
+              separatorBuilder: (ctx, id) => Divider(
+                indent:
+                    nk88, // Aligns perfectly with the start of the song title
+                endIndent: nk00,
+                thickness: nk0pt5,
+                color: Theme.of(context).colorScheme.outlineVariant,
               ),
+              itemCount: songs.length,
+              itemBuilder: (ctx, id) {
+                final song = songs[id];
+                return AudioListTile(song: song);
+              },
             ),
           ),
+          Positioned(bottom: nk16, right: nk16, child: SearchFab()),
         ],
       ),
     );
@@ -119,7 +118,6 @@ class AudioArtWorkWidget extends StatelessWidget {
     );
   }
 }
-
 
 class SearchFab extends StatelessWidget {
   const SearchFab({super.key});
