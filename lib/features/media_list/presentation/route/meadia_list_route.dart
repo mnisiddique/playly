@@ -3,7 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:playly/core/app/extension/app_theme.dart';
 import 'package:playly/core/app/navigation/named_route.dart';
+import 'package:playly/core/presentation/widget/loading_widget.dart';
+import 'package:playly/features/media_list/presentation/route/audio_list_widget.dart';
 import 'package:playly/features/media_list/presentation/route/listener.dart';
 import 'package:playly/features/media_list/presentation/route/providers.dart';
 import 'package:playly/features/media_list/presentation/cubit/songs/songs_cubit.dart';
@@ -42,28 +45,18 @@ class _MeadiaListScreenState extends State<MeadiaListScreen> {
       child: Scaffold(
         backgroundColor: ColorGen.kCloudMist,
         body: SafeArea(
-          child: PlaceHolderWidget(
-            title: vskNoAudioTitle,
-            supportingText: vskNoAudioMessage,
-            animName: AssetGen.anim.noData,
-            dimension: nk202,
+          child: BlocBuilder<SongsCubit, SongsState>(
+            builder: (context, state) {
+              return state.when(
+                initial: () => SizedBox.shrink(),
+                loading: () => Center(child: LoadingWidget()),
+                loaded: (songs) => AudioListWidget(songs: songs),
+                noSong: () => NoAudioWidget(),
+                noPermission: (isPermament) =>
+                    PermissionDeniedWidget(isPermment: isPermament),
+              );
+            },
           ),
-          // child: BlocBuilder<SongsCubit, SongsState>(
-          //   builder: (context, state) {
-          //     return state.when(
-          //       initial: () => SizedBox.shrink(),
-          //       loading: () => Center(child: LoadingWidget()),
-          //       loaded: (songs) => AudioListWidget(songs: songs),
-          //       noSong: () => PlaceHolderWidget(
-          //         title: vskNoAudioTitle,
-          //         supportingText: vskNoAudioMessage,
-          //         animName: AssetGen.anim.noData,
-          //       ),
-          //       noPermission: (isPermament) =>
-          //           PermissionDeniedWidget(isPermment: isPermament),
-          //     );
-          //   },
-          // ),
         ),
       ),
     );
@@ -76,51 +69,86 @@ class PermissionDeniedWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return isPermment
-        ? Center(
-            child: TextButton(
-              onPressed: () => openAppSettings(),
-              child: Text("Allow Permission from settings"),
+    return Padding(
+      padding: const EdgeInsets.all(nk16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Lottie.asset(
+            AssetGen.anim.noMusicAccess,
+            width: nk202,
+            height: nk202,
+            fit: BoxFit.cover,
+          ),
+          Gap(nk16),
+          Text(
+            vskPermissionDenialTitle,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: ColorGen.kCarbonBlue,
+              letterSpacing: nk00,
             ),
-          )
-        : Center(
-            child: TextButton(
-              onPressed: () =>
-                  context.read<SongsCubit>().requestAudioPermission(),
-              child: Text("Allow Audio Permission"),
+          ),
+          Gap(nk08),
+          Text(
+            isPermment
+                ? vskPermissionPermamentlyDenialMessage
+                : vskPermissionDenialMessage,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: ColorGen.kCarbonBlue,
+              letterSpacing: nk0pt25,
             ),
-          );
+          ),
+          Gap(nk24),
+          MaterialButton(
+            color: context.appPrimaryColor,
+            height: nk48,
+            elevation: nk00,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(nk24),
+            ),
+            onPressed: () {
+              if (isPermment) {
+                openAppSettings();
+              } else {
+                context.read<SongsCubit>().requestAudioPermission();
+              }
+            },
+            child: Text(
+              isPermment ? vskOpenSettings : vskGrantPermission,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: Colors.white,
+                // color: ColorGen.kCarbonBlue,
+                letterSpacing: nk0pt30,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
-class PlaceHolderWidget extends StatelessWidget {
-  final String title;
-  final String supportingText;
-  final String animName;
-  final double dimension;
-  const PlaceHolderWidget({
-    super.key,
-    required this.title,
-    required this.supportingText,
-    required this.animName,
-    required this.dimension,
-  });
+class NoAudioWidget extends StatelessWidget {
+  const NoAudioWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final dimension = nk202;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Lottie.asset(
-          animName,
+          AssetGen.anim.noData,
           width: dimension,
           height: dimension,
           fit: BoxFit.cover,
         ),
         Gap(nk16),
         Text(
-          title,
+          vskNoAudioTitle,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             color: ColorGen.kCarbonBlue,
             letterSpacing: nk00,
@@ -128,7 +156,7 @@ class PlaceHolderWidget extends StatelessWidget {
         ),
         Gap(nk08),
         Text(
-          supportingText,
+          vskNoAudioMessage,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: ColorGen.kCarbonBlue,
