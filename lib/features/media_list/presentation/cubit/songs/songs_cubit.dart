@@ -13,6 +13,8 @@ class SongsCubit extends Cubit<SongsState> {
   final GetSongsUc _getSongsUc;
   final RequestPermission _requestAudioPermission;
 
+  List<AudioMediaEntity> _allSongs = [];
+
   SongsCubit({
     required GetSongsUc getSongsUc,
 
@@ -27,6 +29,7 @@ class SongsCubit extends Cubit<SongsState> {
     if (songs.isEmpty) {
       emit(SongsState.noSong());
     } else {
+      _allSongs = songs;
       emit(SongsState.loaded(songs: songs));
     }
   }
@@ -45,5 +48,17 @@ class SongsCubit extends Cubit<SongsState> {
         emit(SongsState.noPermission(true));
         break;
     }
+  }
+
+  void filterSongs(String query) {
+    final filteredSongs = _allSongs
+        .where(
+          (song) =>
+              song.title.toLowerCase().contains(query.toLowerCase()) ||
+              song.artist.toLowerCase().contains(query.toLowerCase()) ||
+              song.album.toLowerCase().contains(query.toLowerCase()),
+        )
+        .toList();
+    emit(SongsState.loaded(songs: filteredSongs));
   }
 }

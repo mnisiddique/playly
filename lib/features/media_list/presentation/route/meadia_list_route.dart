@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:playly/core/app/navigation/named_route.dart';
 import 'package:playly/core/presentation/widget/loading_widget.dart';
 import 'package:playly/features/media_list/presentation/route/audio_list_widget.dart';
+import 'package:playly/features/media_list/presentation/route/listener.dart';
 import 'package:playly/features/media_list/presentation/route/providers.dart';
 import 'package:playly/features/media_list/presentation/cubit/songs/songs_cubit.dart';
 import 'package:playly/res/index.dart';
@@ -37,20 +38,22 @@ class _MeadiaListScreenState extends State<MeadiaListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ColorGen.kCloudMist,
-      body: SafeArea(
-        child: BlocBuilder<SongsCubit, SongsState>(
-          builder: (context, state) {
-            return state.when(
-              initial: () => SizedBox.shrink(),
-              loading: () => Center(child: LoadingWidget()),
-              loaded: (songs) => AudioListWidget(songs: songs),
-              noSong: () => NoAudioWidget(),
-              noPermission: (isPermament) =>
-                  PermissionDeniedWidget(isPermment: isPermament),
-            );
-          },
+    return AudioListListeners(
+      child: Scaffold(
+        backgroundColor: ColorGen.kCloudMist,
+        body: SafeArea(
+          child: BlocBuilder<SongsCubit, SongsState>(
+            builder: (context, state) {
+              return state.when(
+                initial: () => SizedBox.shrink(),
+                loading: () => Center(child: LoadingWidget()),
+                loaded: (songs) => AudioListWidget(songs: songs),
+                noSong: () => NoAudioWidget(),
+                noPermission: (isPermament) =>
+                    PermissionDeniedWidget(isPermment: isPermament),
+              );
+            },
+          ),
         ),
       ),
     );
