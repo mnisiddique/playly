@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:playly/core/app/navigation/named_route.dart';
-import 'package:playly/core/presentation/widget/loading_widget.dart';
-import 'package:playly/features/media_list/presentation/route/audio_list_widget.dart';
 import 'package:playly/features/media_list/presentation/route/listener.dart';
 import 'package:playly/features/media_list/presentation/route/providers.dart';
 import 'package:playly/features/media_list/presentation/cubit/songs/songs_cubit.dart';
+import 'package:gap/gap.dart';
 import 'package:playly/res/index.dart';
 
 class MediaListRoute extends GoRoute {
@@ -42,18 +42,28 @@ class _MeadiaListScreenState extends State<MeadiaListScreen> {
       child: Scaffold(
         backgroundColor: ColorGen.kCloudMist,
         body: SafeArea(
-          child: BlocBuilder<SongsCubit, SongsState>(
-            builder: (context, state) {
-              return state.when(
-                initial: () => SizedBox.shrink(),
-                loading: () => Center(child: LoadingWidget()),
-                loaded: (songs) => AudioListWidget(songs: songs),
-                noSong: () => NoAudioWidget(),
-                noPermission: (isPermament) =>
-                    PermissionDeniedWidget(isPermment: isPermament),
-              );
-            },
+          child: PlaceHolderWidget(
+            title: vskNoAudioTitle,
+            supportingText: vskNoAudioMessage,
+            animName: AssetGen.anim.noData,
+            dimension: nk202,
           ),
+          // child: BlocBuilder<SongsCubit, SongsState>(
+          //   builder: (context, state) {
+          //     return state.when(
+          //       initial: () => SizedBox.shrink(),
+          //       loading: () => Center(child: LoadingWidget()),
+          //       loaded: (songs) => AudioListWidget(songs: songs),
+          //       noSong: () => PlaceHolderWidget(
+          //         title: vskNoAudioTitle,
+          //         supportingText: vskNoAudioMessage,
+          //         animName: AssetGen.anim.noData,
+          //       ),
+          //       noPermission: (isPermament) =>
+          //           PermissionDeniedWidget(isPermment: isPermament),
+          //     );
+          //   },
+          // ),
         ),
       ),
     );
@@ -83,11 +93,49 @@ class PermissionDeniedWidget extends StatelessWidget {
   }
 }
 
-class NoAudioWidget extends StatelessWidget {
-  const NoAudioWidget({super.key});
+class PlaceHolderWidget extends StatelessWidget {
+  final String title;
+  final String supportingText;
+  final String animName;
+  final double dimension;
+  const PlaceHolderWidget({
+    super.key,
+    required this.title,
+    required this.supportingText,
+    required this.animName,
+    required this.dimension,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("No Audio files"));
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Lottie.asset(
+          animName,
+          width: dimension,
+          height: dimension,
+          fit: BoxFit.cover,
+        ),
+        Gap(nk16),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: ColorGen.kCarbonBlue,
+            letterSpacing: nk00,
+          ),
+        ),
+        Gap(nk08),
+        Text(
+          supportingText,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: ColorGen.kCarbonBlue,
+            letterSpacing: nk0pt25,
+          ),
+        ),
+      ],
+    );
   }
 }

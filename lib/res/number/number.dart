@@ -59,6 +59,7 @@ const double nk600 = 600.0;
 const double nk0pt65 = 0.65;
 const double nk0pt1 = 0.10;
 const double nk0pt15 = 0.15;
+const double nk0pt25 = 0.25;
 const double nk0pt30 = 0.30;
 const double nk0pt41 = 0.41;
 const double nk0pt44 = 0.44;
