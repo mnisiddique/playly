@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:on_audio_query_pluse/on_audio_query.dart';
+import 'package:playly/core/app/extension/context/media_query.dart';
 import 'package:playly/core/app/extension/string/casing.dart';
 import 'package:playly/features/media_list/domain/entity/audio_media.dart';
-import 'package:playly/features/media_list/presentation/cubit/user_scroll_notification/user_scroll_notification_cubit.dart';
+import 'package:playly/features/media_list/presentation/cubit/audio_search/audio_search_cubit.dart';
+
 import 'package:playly/features/media_list/presentation/model/audio_model.dart';
 import 'package:playly/res/index.dart';
 
@@ -13,34 +15,139 @@ class AudioListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NotificationListener<UserScrollNotification>(
-      onNotification: (notification) {
-        final notificationCubit = context.read<UserScrollNotificationCubit>();
-        notificationCubit.onScrollNotification(notification);
-
-        return true;
-      },
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: ListView.separated(
-              separatorBuilder: (ctx, id) => Divider(
-                indent:
-                    nk88, // Aligns perfectly with the start of the song title
-                endIndent: nk00,
-                thickness: nk0pt5,
-                color: Theme.of(context).colorScheme.outlineVariant,
-              ),
-              itemCount: songs.length,
-              itemBuilder: (ctx, id) {
-                final song = songs[id];
-                return AudioListTile(song: song);
-              },
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: ListView.separated(
+            separatorBuilder: (ctx, id) => Divider(
+              indent: nk88, // Aligns perfectly with the start of the song title
+              endIndent: nk00,
+              thickness: nk0pt5,
+              color: Theme.of(context).colorScheme.outlineVariant,
             ),
+            itemCount: songs.length,
+            itemBuilder: (ctx, id) {
+              final song = songs[id];
+              return AudioListTile(song: song);
+            },
           ),
-          Positioned(bottom: nk16, right: nk16, child: SearchFab()),
-        ],
+        ),
+        AudioSearchUtility(),
+      ],
+    );
+  }
+}
+
+class AudioSearchBar extends StatelessWidget {
+  final bool isOpened;
+  final FocusNode focusNode;
+  const AudioSearchBar({
+    super.key,
+    required this.isOpened,
+    required this.focusNode,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: !isOpened,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          return;
+        }
+        if (isOpened) {
+          context.read<AudioSearchCubit>().closeSearch();
+          focusNode.unfocus();
+        }
+      },
+      child: SearchBar(
+        focusNode: focusNode,
+        keyboardType: TextInputType.text,
+        controller: isOpened ? null : TextEditingController()
+          ?..clear(),
+        onTap: () {
+          if (!isOpened) {
+            context.read<AudioSearchCubit>().openSearch();
+          }
+        },
+        leading: const Icon(Icons.search),
+        hintText: vskSearchMusic,
+        elevation: WidgetStateProperty.all(6.0),
+        backgroundColor: WidgetStateProperty.all(
+          isOpened
+              ? Theme.of(context).colorScheme.surfaceContainerHighest
+              : Theme.of(context).colorScheme.primaryContainer,
+        ),
+        onChanged: (String value) =>
+            context.read<AudioSearchCubit>().searching(value),
+
+        trailing: isOpened
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    context.read<AudioSearchCubit>().closeSearch();
+                    focusNode.unfocus();
+                  },
+                ),
+              ]
+            : null,
       ),
+    );
+  }
+}
+
+class AudioSearchUtility extends StatefulWidget {
+  const AudioSearchUtility({super.key});
+
+  @override
+  State<AudioSearchUtility> createState() => _AudioSearchUtilityState();
+}
+
+class _AudioSearchUtilityState extends State<AudioSearchUtility> {
+  late final FocusNode _audioSearchFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _audioSearchFocusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _audioSearchFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AudioSearchCubit, AudioSearchState>(
+      builder: (context, state) {
+        final isOpened = state.maybeWhen(
+          orElse: () => true,
+          closed: () => false,
+        );
+        return AnimatedPositioned(
+          duration: Duration(milliseconds: 250),
+          curve: Curves.fastOutSlowIn,
+          bottom: nk16,
+          right: nk16,
+          left: isOpened ? nk16 : context.scrSize.width - nk164,
+          onEnd: () {
+            if (isOpened) {
+              _audioSearchFocusNode.canRequestFocus = true;
+              _audioSearchFocusNode.requestFocus();
+            } else {
+              _audioSearchFocusNode.canRequestFocus = false;
+              _audioSearchFocusNode.unfocus();
+            }
+          },
+          child: AudioSearchBar(
+            isOpened: isOpened,
+            focusNode: _audioSearchFocusNode,
+          ),
+        );
+      },
     );
   }
 }
@@ -115,27 +222,6 @@ class AudioArtWorkWidget extends StatelessWidget {
         ),
         child: Icon(Icons.music_note_rounded),
       ),
-    );
-  }
-}
-
-class SearchFab extends StatelessWidget {
-  const SearchFab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<
-      UserScrollNotificationCubit,
-      UserScrollNotificationState
-    >(
-      builder: (context, state) {
-        return FloatingActionButton.extended(
-          label: Text(vskSearchMusic),
-          isExtended: state.when(initial: () => true, scrolling: () => false),
-          onPressed: () {},
-          icon: Icon(Icons.search),
-        );
-      },
     );
   }
 }

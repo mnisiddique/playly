@@ -57,8 +57,6 @@ class _MeadiaListScreenState extends State<MeadiaListScreen> {
   }
 }
 
-
-
 class PermissionDeniedWidget extends StatelessWidget {
   final bool isPermment;
   const PermissionDeniedWidget({super.key, required this.isPermment});
