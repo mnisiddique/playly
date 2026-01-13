@@ -9,7 +9,7 @@ import 'package:playly/core/presentation/widget/loading_widget.dart';
 import 'package:playly/features/media_list/presentation/route/audio_list_widget.dart';
 import 'package:playly/features/media_list/presentation/route/listener.dart';
 import 'package:playly/features/media_list/presentation/route/providers.dart';
-import 'package:playly/features/media_list/presentation/cubit/songs/songs_cubit.dart';
+import 'package:playly/core/presentation/cubit/songs/songs_cubit.dart';
 import 'package:gap/gap.dart';
 import 'package:playly/res/index.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:playly/core/presentation/model/now_playing_audio.dart';
+import 'package:playly/core/presentation/model/audio_model.dart';
 import 'package:playly/features/media_list/domain/entity/audio_media.dart';
 
 part 'now_playing_audio_state.dart';

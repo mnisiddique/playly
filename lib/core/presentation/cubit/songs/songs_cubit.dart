@@ -1,8 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:playly/core/app/extension/list.dart';
+import 'package:playly/core/presentation/model/audio_model.dart';
 import 'package:playly/core/service/permission_service.dart';
-import 'package:playly/features/media_list/domain/entity/audio_media.dart';
 import 'package:playly/features/media_list/domain/usecase/get_songs_uc.dart';
 
 part 'songs_state.dart';
@@ -13,7 +14,7 @@ class SongsCubit extends Cubit<SongsState> {
   final GetSongsUc _getSongsUc;
   final RequestPermission _requestAudioPermission;
 
-  List<AudioEntity> _allSongs = [];
+  List<AudioModel> _allSongs = [];
 
   SongsCubit({
     required GetSongsUc getSongsUc,
@@ -29,8 +30,10 @@ class SongsCubit extends Cubit<SongsState> {
     if (songs.isEmpty) {
       emit(SongsState.noSong());
     } else {
-      _allSongs = songs;
-      emit(SongsState.loaded(songs: songs));
+      _allSongs = songs.mapIndexed(
+        (index, song) => AudioModel(audio: song, position: index),
+      );
+      emit(SongsState.loaded(songs: _allSongs));
     }
   }
 
@@ -54,9 +57,9 @@ class SongsCubit extends Cubit<SongsState> {
     final filteredSongs = _allSongs
         .where(
           (song) =>
-              song.title.toLowerCase().contains(query.toLowerCase()) ||
-              song.artist.toLowerCase().contains(query.toLowerCase()) ||
-              song.album.toLowerCase().contains(query.toLowerCase()),
+              song.audio.title.toLowerCase().contains(query.toLowerCase()) ||
+              song.audio.artist.toLowerCase().contains(query.toLowerCase()) ||
+              song.audio.album.toLowerCase().contains(query.toLowerCase()),
         )
         .toList();
     emit(SongsState.loaded(songs: filteredSongs));

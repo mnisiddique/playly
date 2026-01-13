@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:on_audio_query_pluse/on_audio_query.dart';
 import 'package:playly/core/app/extension/context/media_query.dart';
 import 'package:playly/core/app/extension/string/casing.dart';
+import 'package:playly/core/presentation/model/audio_model.dart';
 import 'package:playly/features/media_list/domain/entity/audio_media.dart';
 import 'package:playly/features/media_list/presentation/cubit/audio_search/audio_search_cubit.dart';
 
-import 'package:playly/features/media_list/presentation/model/audio_model.dart';
 import 'package:playly/res/index.dart';
 
 class AudioListWidget extends StatelessWidget {
-  final List<AudioMediaEntity> songs;
+  final List<AudioModel> songs;
   const AudioListWidget({super.key, required this.songs});
 
   @override
@@ -155,16 +155,17 @@ class _AudioSearchUtilityState extends State<AudioSearchUtility> {
 class AudioListTile extends StatelessWidget {
   const AudioListTile({super.key, required this.song});
 
-  final AudioMediaEntity song;
+  final AudioModel song;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onTap: () {},
       isThreeLine: true,
-      leading: AudioArtWorkWidget(song: song),
+      leading: AudioArtWorkWidget(song: song.audio),
       tileColor: Colors.white,
       title: Text(
-        song.title,
+        song.audio.title,
         maxLines: nkInt01,
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -200,7 +201,7 @@ class AudioListTile extends StatelessWidget {
 class AudioArtWorkWidget extends StatelessWidget {
   const AudioArtWorkWidget({super.key, required this.song});
 
-  final AudioMediaEntity song;
+  final AudioEntity song;
 
   @override
   Widget build(BuildContext context) {

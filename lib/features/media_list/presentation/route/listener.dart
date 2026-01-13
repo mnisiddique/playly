@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:playly/features/media_list/presentation/cubit/audio_search/audio_search_cubit.dart';
-import 'package:playly/features/media_list/presentation/cubit/songs/songs_cubit.dart';
+import 'package:playly/core/presentation/cubit/songs/songs_cubit.dart';
 import 'package:playly/res/index.dart';
 
 class AudioListListeners extends MultiBlocListener {
