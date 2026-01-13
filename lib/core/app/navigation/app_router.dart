@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:playly/features/media_list/presentation/route/meadia_list_route.dart';
-import 'package:playly/features/player/presentation/route/media_player_route.dart';
-
+import 'package:playly/features/player/presentation/route/audio_player_route.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
@@ -21,11 +20,7 @@ class AppRouter {
     GoRouter(
       observers: [routeObserver],
 
-      routes: [
-        MediaListRoute(),
-        MediaPlayerRoute(),
-        
-      ],
+      routes: [MediaListRoute(), AudioPlayerRoute()],
     ),
   );
 }

@@ -1,6 +1,6 @@
 enum NamedRoute {
   mediaList(''),
-  mediaPlayer('player');
+  audioPlayer('player');
 
   final String _routeName;
   const NamedRoute(this._routeName);
