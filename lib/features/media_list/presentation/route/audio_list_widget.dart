@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:on_audio_query_pluse/on_audio_query.dart';
 import 'package:playly/core/app/extension/context/media_query.dart';
 import 'package:playly/core/app/extension/string/casing.dart';
+import 'package:playly/core/app/navigation/named_route.dart';
+import 'package:playly/core/presentation/cubit/now_playing_audio/now_playing_audio_cubit.dart';
 import 'package:playly/core/presentation/model/audio_model.dart';
 import 'package:playly/features/media_list/domain/entity/audio_media.dart';
 import 'package:playly/features/media_list/presentation/cubit/audio_search/audio_search_cubit.dart';
@@ -160,7 +163,10 @@ class AudioListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: () {},
+      onTap: () {
+        context.read<NowPlayingAudioCubit>().setNowPlayingAudio(song);
+        context.pushNamed(NamedRoute.audioPlayer.routeName);
+      },
       isThreeLine: true,
       leading: AudioArtWorkWidget(song: song.audio),
       tileColor: Colors.white,
