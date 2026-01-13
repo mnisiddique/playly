@@ -19,7 +19,7 @@ class AudioMediaRepoImpl implements AudioMediaRepo {
        _localAudioSrc = localAudioSrc;
 
   @override
-  Future<List<AudioMediaEntity>> getAudioMedia(AudioQueryParam param) async {
+  Future<List<AudioEntity>> getAudioMedia(AudioQueryParam param) async {
     final requestModel = AudioRequestModel.fromParam(param);
     List<SongModel> songs = await _localAudioSrc.getAudioMedia(requestModel);
     songs = songs

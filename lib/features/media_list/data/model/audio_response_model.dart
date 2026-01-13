@@ -3,8 +3,8 @@ import 'package:playly/features/media_list/domain/entity/audio_media.dart';
 import 'package:playly/res/visible_string/visible_string.dart';
 
 extension AudioResponseModel on SongModel {
-  AudioMediaEntity toEntity() {
-    return AudioMediaEntity(
+  AudioEntity toEntity() {
+    return AudioEntity(
       title: displayName,
       artist: artist ?? vskUnknownArtist,
       album: album ?? vskUnknownAlbum,

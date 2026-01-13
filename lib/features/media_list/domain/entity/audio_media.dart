@@ -1,4 +1,4 @@
-class AudioMediaEntity {
+class AudioEntity {
   final String title;
   final String artist;
   final String album;
@@ -6,7 +6,7 @@ class AudioMediaEntity {
   final int size;
   final int? duration;
 
-  AudioMediaEntity({
+  AudioEntity({
     required this.title,
     required this.artist,
     required this.album,

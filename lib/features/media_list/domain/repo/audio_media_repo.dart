@@ -1,7 +1,7 @@
 import 'package:playly/features/media_list/domain/entity/audio_media.dart';
 
 abstract class AudioMediaRepo {
-  Future<List<AudioMediaEntity>> getAudioMedia(AudioQueryParam param);
+  Future<List<AudioEntity>> getAudioMedia(AudioQueryParam param);
 }
 
 enum SortOrder { fromSmallerToLarger, fromLargerToSmaller }

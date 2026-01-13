@@ -13,7 +13,7 @@ class SongsCubit extends Cubit<SongsState> {
   final GetSongsUc _getSongsUc;
   final RequestPermission _requestAudioPermission;
 
-  List<AudioMediaEntity> _allSongs = [];
+  List<AudioEntity> _allSongs = [];
 
   SongsCubit({
     required GetSongsUc getSongsUc,

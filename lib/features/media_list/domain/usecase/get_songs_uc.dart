@@ -9,7 +9,7 @@ class GetSongsUc {
   GetSongsUc({required AudioMediaRepo audioMediaRepo})
     : _audioMediaRepo = audioMediaRepo;
 
-  Future<List<AudioMediaEntity>> call() async {
+  Future<List<AudioEntity>> call() async {
     return _audioMediaRepo.getAudioMedia(AudioQueryParam());
   }
 }
