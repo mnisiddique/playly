@@ -11,6 +11,7 @@ import 'package:playly/core/app/navigation/named_route.dart';
 import 'package:playly/core/presentation/cubit/now_playing_audio/now_playing_audio_cubit.dart';
 import 'package:playly/core/presentation/model/audio_model.dart';
 import 'package:playly/core/presentation/widget/app_background.dart';
+import 'package:playly/core/presentation/widget/neumorphic_icon_button.dart';
 import 'package:playly/res/index.dart';
 
 class AudioPlayerRoute extends GoRoute {
@@ -74,6 +75,10 @@ class AudioPlayerScreenContent extends StatelessWidget {
               Gap(nk16),
               NowPlayingTitle(song: song),
               NowPlayingArtist(song: song),
+              Gap(nk24),
+              AudioPlayingProgress(song: song),
+              DurationWidget(song: song),
+              NeumorphicIconButton(),
             ],
           ),
         ),
@@ -82,11 +87,72 @@ class AudioPlayerScreenContent extends StatelessWidget {
   }
 }
 
+
+
+class DurationWidget extends StatelessWidget {
+  final AudioModel song;
+  const DurationWidget({super.key, required this.song});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          song.durationLabel,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Colors.white70,
+            letterSpacing: nkNegative0pt31,
+          ),
+        ),
+        Text(
+          song.durationLabel, //TODO: Change to remaining duration
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Colors.white70,
+            letterSpacing: nkNegative0pt31,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AudioPlayingProgress extends StatelessWidget {
+  const AudioPlayingProgress({super.key, required this.song});
+
+  final AudioModel song;
+
+  @override
+  Widget build(BuildContext context) {
+    final minHeight = nk04;
+    return SliderTheme(
+      data: SliderTheme.of(context).copyWith(
+        thumbShape: SliderComponentShape.noThumb,
+        trackHeight: minHeight,
+        overlayShape: SliderComponentShape.noOverlay,
+        activeTrackColor: ColorGen.kActiveWhite,
+        inactiveTrackColor: ColorGen.kOrbitStroke,
+        trackGap: nk02,
+        year2023: false,
+      ),
+      child: SizedBox(
+        height: nk24,
+        child: Slider(
+          allowedInteraction: SliderInteraction.tapAndSlide,
+          value: 40,
+          min: 0,
+          max: 100,
+          onChanged: (value) {
+            // setState(() => _currentValue = value);
+          },
+        ),
+      ),
+    );
+  }
+}
+
 class NowPlayingArtist extends StatelessWidget {
-  const NowPlayingArtist({
-    super.key,
-    required this.song,
-  });
+  const NowPlayingArtist({super.key, required this.song});
 
   final AudioModel song;
 

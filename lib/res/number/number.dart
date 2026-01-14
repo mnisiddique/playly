@@ -10,6 +10,7 @@ const double nkNegative0pt1 = -0.1;
 const double nk02 = 2.0;
 const double nk03 = 3.0;
 const double nk04 = 4.0;
+const double nkNegative04 = -4.0;
 const double nk06 = 6.0;
 const double nk08 = 8.0;
 const double nk10 = 10.0;
