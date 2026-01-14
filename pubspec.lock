@@ -579,16 +579,20 @@ packages:
   on_audio_query_plus_android:
     dependency: transitive
     description:
-      path: "packages/on_audio_query/packages/on_audio_query_plus_android"
-      relative: true
-    source: path
+      path: "packages/on_audio_query_plus_android"
+      ref: main
+      resolved-ref: "175bea2b48356abb083305f65a06033dcf752daa"
+      url: "https://github.com/mnisiddique/on_audio_query.git"
+    source: git
     version: "1.2.2"
   on_audio_query_pluse:
     dependency: "direct main"
     description:
-      path: "packages/on_audio_query/packages/on_audio_query_pluse"
-      relative: true
-    source: path
+      path: "packages/on_audio_query_pluse"
+      ref: main
+      resolved-ref: "175bea2b48356abb083305f65a06033dcf752daa"
+      url: "https://github.com/mnisiddique/on_audio_query.git"
+    source: git
     version: "3.0.6"
   package_config:
     dependency: transitive
