@@ -48,6 +48,7 @@ const double nk150 = 150.0;
 const double nk164 = 164.0;
 const double nk184 = 184.0;
 const double nk202 = 202.0;
+const double nk200 = 200.0;
 const double nk210 = 210.0;
 const double nk240 = 240.0;
 const double nk260 = 260.0;
