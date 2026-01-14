@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:playly/core/app/navigation/named_route.dart';
 import 'package:playly/core/presentation/cubit/now_playing_audio/now_playing_audio_cubit.dart';
 import 'package:playly/core/presentation/model/audio_model.dart';
-import 'package:playly/res/index.dart';
+import 'package:playly/core/presentation/widget/app_background.dart';
 
 class AudioPlayerRoute extends GoRoute {
   AudioPlayerRoute()
@@ -50,26 +50,6 @@ class AudioPlayerScreenContent extends StatelessWidget {
           ).textTheme.headlineMedium?.copyWith(color: Colors.white),
         ),
       ),
-    );
-  }
-}
-
-class AppBackground extends StatelessWidget {
-  final Widget child;
-  const AppBackground({super.key, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: RadialGradient(
-          center: Alignment(nk00, nkNegative0pt1),
-          radius: nk1pt2,
-          colors: [ColorGen.kCelestialGlow, ColorGen.kCelestialDeep],
-          stops: [0.0, 1.0],
-        ),
-      ),
-      child: child,
     );
   }
 }
