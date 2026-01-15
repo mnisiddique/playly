@@ -26,7 +26,7 @@ class AudioListWidget extends StatelessWidget {
               indent: nk88, // Aligns perfectly with the start of the song title
               endIndent: nk00,
               thickness: nk0pt5,
-              color: Theme.of(context).colorScheme.outlineVariant,
+              color: ColorGen.kOrbitStroke,
             ),
             itemCount: songs.length,
             itemBuilder: (ctx, id) {
@@ -169,13 +169,12 @@ class AudioListTile extends StatelessWidget {
       },
       isThreeLine: true,
       leading: AudioArtWorkWidget(song: song.audio),
-      tileColor: Colors.white,
       title: Text(
         song.audio.title,
         maxLines: nkInt01,
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-          color: ColorGen.kCarbonBlue,
+          color: ColorGen.kActiveWhite,
           letterSpacing: nkNegative0pt31,
         ),
       ),
@@ -185,7 +184,7 @@ class AudioListTile extends StatelessWidget {
           Text(
             song.artistLabel.toTitleCase(),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: ColorGen.kCharcolBlue,
+              color: Colors.white70,
               letterSpacing: nkNegative0pt15,
             ),
           ),
@@ -194,7 +193,7 @@ class AudioListTile extends StatelessWidget {
             maxLines: nkInt01,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: ColorGen.kCharcolBlue,
+              color: Colors.white70,
               letterSpacing: nkNegative0pt15,
             ),
           ),
@@ -222,12 +221,12 @@ class AudioArtWorkWidget extends StatelessWidget {
         width: nk56,
         decoration: BoxDecoration(
           border: Border.all(
-            width: nk0pt5,
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            width: nk01,
+            color: ColorGen.kOrbitStroke,
           ),
           borderRadius: BorderRadius.circular(nk08),
         ),
-        child: Icon(Icons.music_note_rounded),
+        child: Icon(Icons.music_note_rounded, color: Colors.white54),
       ),
     );
   }

@@ -124,9 +124,9 @@ class NowPlayingTitle extends StatelessWidget {
           letterSpacing: nkNegative0pt31,
         ),
         scrollAxis: Axis.horizontal,
-        blankSpace: 30.0,
-        velocity: 50.0, // Slow it down to see if it starts
-        pauseAfterRound: Duration(seconds: 1),
+        blankSpace: nk32,
+        velocity: nk56, // Slow it down to see if it starts
+        pauseAfterRound: Duration(seconds: nkInt01),
       ),
     );
   }
