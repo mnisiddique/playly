@@ -75,10 +75,10 @@ class AudioPlayerScreenContent extends StatelessWidget {
               Gap(nk16),
               NowPlayingTitle(song: song),
               NowPlayingArtist(song: song),
-              Gap(nk24),
+              Gap(nk16),
               AudioPlayingProgress(song: song),
               DurationWidget(song: song),
-              Gap(nk32),
+              Gap(nk24),
               PlaybackControlWidget()
             ],
           ),
