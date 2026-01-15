@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:playly/core/presentation/cubit/now_playing_audio/now_playing_audio_cubit.dart';
+import 'package:playly/core/presentation/cubit/songs/songs_cubit.dart';
 import 'package:playly/core/presentation/model/audio_model.dart';
 import 'package:playly/core/presentation/widget/neumorphic_icon_button.dart';
 import 'package:playly/res/index.dart';
+
 class PlaybackControlWidget extends StatelessWidget {
   const PlaybackControlWidget({super.key});
 
@@ -35,19 +39,29 @@ class ControlRow extends StatelessWidget {
         NeumorphicIconButton(
           radius: nk48,
           icon: Icon(Icons.skip_previous_outlined, color: Colors.white),
-          onTapCallback: () {},
+          onTapCallback: () {
+            final audioList = context.read<SongsCubit>().allSongs;
+            context.read<NowPlayingAudioCubit>().previousAudio(audioList);
+          },
         ),
         HorizontalLine(width: separatorWidth),
         NeumorphicIconButton(
           radius: nk64,
-          icon: Icon(Icons.play_arrow_outlined, size: nk48, color: Colors.white),
+          icon: Icon(
+            Icons.play_arrow_outlined,
+            size: nk48,
+            color: Colors.white,
+          ),
           onTapCallback: () {},
         ),
         HorizontalLine(width: separatorWidth),
         NeumorphicIconButton(
           radius: nk48,
           icon: Icon(Icons.skip_next_outlined, color: Colors.white),
-          onTapCallback: () {},
+          onTapCallback: () {
+            final audioList = context.read<SongsCubit>().allSongs;
+            context.read<NowPlayingAudioCubit>().nextAudio(audioList);
+          },
         ),
       ],
     );
@@ -67,6 +81,7 @@ class HorizontalLine extends StatelessWidget {
     );
   }
 }
+
 class VerticalLine extends StatelessWidget {
   final double height;
   const VerticalLine({super.key, this.height = nk24});
@@ -142,4 +157,3 @@ class AudioPlayingProgress extends StatelessWidget {
     );
   }
 }
-

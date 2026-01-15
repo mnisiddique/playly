@@ -64,4 +64,5 @@ class SongsCubit extends Cubit<SongsState> {
         .toList();
     emit(SongsState.loaded(songs: filteredSongs));
   }
+  List<AudioModel> get allSongs => _allSongs;
 }

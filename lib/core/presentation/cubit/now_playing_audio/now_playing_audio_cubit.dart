@@ -13,4 +13,42 @@ class NowPlayingAudioCubit extends Cubit<NowPlayingAudioState> {
   void setNowPlayingAudio(AudioModel audio) {
     emit(NowPlayingAudioState.nowPlaying(audio: audio));
   }
+
+  void nextAudio(List<AudioModel> audioList) {
+    final currPos = currentPosition();
+    final nextPos = normalize(currPos + 1, audioList.length);
+    if (currPos >= 0) {
+      setNowPlayingAudio(audioList[nextPos]);
+    }
+  }
+
+  void previousAudio(List<AudioModel> audioList) {
+    final currPos = currentPosition();
+    final prevPos = normalize(currPos - 1, audioList.length);
+    if (currPos >= 0) {
+      setNowPlayingAudio(audioList[prevPos]);
+    }
+  }
+
+  int currentPosition() {
+    return state.maybeWhen(
+      nowPlaying: (audio) => audio.position,
+      orElse: () => -1,
+    );
+  }
+
+  bool isNewPositionValid(int newPosition, int length) {
+    return newPosition >= 0 && newPosition < length;
+  }
+
+  int normalize(int newPosition, int length) {
+    if (newPosition >= 0 && newPosition < length) {
+      return newPosition;
+    } else if (newPosition < 0) {
+      return length - 1;
+    } else if (newPosition >= length) {
+      return 0;
+    }
+    throw Exception('Invalid position'); 
+  }
 }
