@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:playly/core/app/extension/app_theme.dart';
 import 'package:playly/core/app/navigation/named_route.dart';
 import 'package:playly/core/presentation/widget/app_background.dart';
 import 'package:playly/core/presentation/widget/loading_widget.dart';
@@ -48,17 +48,23 @@ class _MeadiaListScreenState extends State<MeadiaListScreen> {
         extendBodyBehindAppBar: true,
         body: AppBackground(
           child: SafeArea(
-            child: BlocBuilder<SongsCubit, SongsState>(
-              builder: (context, state) {
-                return state.when(
-                  initial: () => SizedBox.shrink(),
-                  loading: () => Center(child: LoadingWidget()),
-                  loaded: (songs) => AudioListWidget(songs: songs),
-                  noSong: () => NoAudioWidget(),
-                  noPermission: (isPermament) =>
-                      PermissionDeniedWidget(isPermment: isPermament),
-                );
-              },
+            child: AnnotatedRegion<SystemUiOverlayStyle>(
+              value: SystemUiOverlayStyle(
+                statusBarIconBrightness: Brightness.light,
+                statusBarBrightness: Brightness.dark,
+              ),
+              child: BlocBuilder<SongsCubit, SongsState>(
+                builder: (context, state) {
+                  return state.when(
+                    initial: () => SizedBox.shrink(),
+                    loading: () => Center(child: LoadingWidget()),
+                    loaded: (songs) => AudioListWidget(songs: songs),
+                    noSong: () => NoAudioWidget(),
+                    noPermission: (isPermament) =>
+                        PermissionDeniedWidget(isPermment: isPermament),
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -89,7 +95,7 @@ class PermissionDeniedWidget extends StatelessWidget {
           Text(
             vskPermissionDenialTitle,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: ColorGen.kCarbonBlue,
+              color: ColorGen.kActiveWhite,
               letterSpacing: nk00,
             ),
           ),
@@ -100,13 +106,13 @@ class PermissionDeniedWidget extends StatelessWidget {
                 : vskPermissionDenialMessage,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: ColorGen.kCarbonBlue,
+              color: Colors.white54,
               letterSpacing: nk0pt25,
             ),
           ),
           Gap(nk24),
           MaterialButton(
-            color: context.appPrimaryColor,
+            color: ColorGen.kCelestialGlow,
             height: nk48,
             elevation: nk00,
             shape: RoundedRectangleBorder(
