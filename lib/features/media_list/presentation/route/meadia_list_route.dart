@@ -154,7 +154,7 @@ class NoAudioWidget extends StatelessWidget {
         Text(
           vskNoAudioTitle,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: ColorGen.kCarbonBlue,
+            color: ColorGen.kActiveWhite,
             letterSpacing: nk00,
           ),
         ),
@@ -163,7 +163,7 @@ class NoAudioWidget extends StatelessWidget {
           vskNoAudioMessage,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: ColorGen.kCarbonBlue,
+            color: Colors.white54,
             letterSpacing: nk0pt25,
           ),
         ),
