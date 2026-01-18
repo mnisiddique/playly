@@ -9,6 +9,7 @@ import 'package:playly/res/index.dart';
 abstract class RegisterModule {
   OnAudioQuery get audioQuery => OnAudioQuery();
 
+  @lazySingleton
   AudioPlayer get audioPlayer => AudioPlayer();
 
   DeviceInfoPlugin get deviceInfo => DeviceInfoPlugin();

@@ -5,6 +5,7 @@ class AudioEntity {
   final int id;
   final int size;
   final int? duration;
+  final Uri? uri;
 
   AudioEntity({
     required this.title,
@@ -13,5 +14,6 @@ class AudioEntity {
     required this.id,
     required this.size,
     required this.duration,
+    required this.uri,
   });
 }

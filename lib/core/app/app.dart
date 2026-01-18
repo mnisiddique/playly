@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:playly/core/app/extension/app_theme.dart';
 import 'package:playly/core/app/navigation/app_router.dart';
-import 'package:playly/core/presentation/global_provider.dart';
+import 'package:playly/core/presentation/provider/global_provider.dart';
 import 'package:playly/res/index.dart';
 
 class PlaylyApp extends StatelessWidget {

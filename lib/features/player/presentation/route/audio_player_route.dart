@@ -11,6 +11,7 @@ import 'package:playly/core/app/navigation/named_route.dart';
 import 'package:playly/core/presentation/cubit/now_playing_audio/now_playing_audio_cubit.dart';
 import 'package:playly/core/presentation/model/audio_model.dart';
 import 'package:playly/core/presentation/widget/app_background.dart';
+import 'package:playly/features/player/presentation/route/listener.dart';
 import 'package:playly/features/player/presentation/route/playback_control_widget.dart';
 import 'package:playly/res/index.dart';
 
@@ -41,15 +42,17 @@ class AudioPlayerScreen extends StatelessWidget {
           statusBarIconBrightness: Brightness.light,
           statusBarBrightness: Brightness.dark,
         ),
-        child: BlocBuilder<NowPlayingAudioCubit, NowPlayingAudioState>(
-          builder: (context, state) {
-            return state.maybeWhen(
-              orElse: () => const SizedBox.shrink(),
-              nowPlaying: (audio) {
-                return AudioPlayerScreenContent(song: audio);
-              },
-            );
-          },
+        child: AudioPlaybackListeners(
+          child: BlocBuilder<NowPlayingAudioCubit, NowPlayingAudioState>(
+            builder: (context, state) {
+              return state.maybeWhen(
+                orElse: () => const SizedBox.shrink(),
+                nowPlaying: (audio) {
+                  return AudioPlayerScreenContent(song: audio);
+                },
+              );
+            },
+          ),
         ),
       ),
     );
@@ -76,10 +79,10 @@ class AudioPlayerScreenContent extends StatelessWidget {
               NowPlayingTitle(song: song),
               NowPlayingArtist(song: song),
               Gap(nk16),
-              AudioPlayingProgress(song: song),
+              AudioPlayingProgress(),
               DurationWidget(song: song),
               Gap(nk24),
-              PlaybackControlWidget()
+              PlaybackControlWidget(),
             ],
           ),
         ),

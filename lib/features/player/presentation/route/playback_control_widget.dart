@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:playly/core/app/extension/duration/duration_formatter.dart';
+import 'package:playly/core/app/injector/auto_injector.dart';
 import 'package:playly/core/presentation/cubit/now_playing_audio/now_playing_audio_cubit.dart';
-import 'package:playly/core/presentation/cubit/songs/songs_cubit.dart';
 import 'package:playly/core/presentation/model/audio_model.dart';
 import 'package:playly/core/presentation/widget/neumorphic_icon_button.dart';
+import 'package:playly/features/player/presentation/cubit/playback/plaback_cubit.dart';
 import 'package:playly/res/index.dart';
 
 class PlaybackControlWidget extends StatelessWidget {
@@ -39,10 +42,7 @@ class ControlRow extends StatelessWidget {
         NeumorphicIconButton(
           radius: nk48,
           icon: Icon(Icons.skip_previous_outlined, color: Colors.white),
-          onTapCallback: () {
-            final audioList = context.read<SongsCubit>().allSongs;
-            context.read<NowPlayingAudioCubit>().previousAudio(audioList);
-          },
+          onTapCallback: context.read<NowPlayingAudioCubit>().previousAudio,
         ),
         HorizontalLine(width: separatorWidth),
         NeumorphicIconButton(
@@ -52,16 +52,15 @@ class ControlRow extends StatelessWidget {
             size: nk48,
             color: Colors.white,
           ),
-          onTapCallback: () {},
+          onTapCallback: () {
+            context.read<PlayBackCubit>().play();
+          },
         ),
         HorizontalLine(width: separatorWidth),
         NeumorphicIconButton(
           radius: nk48,
           icon: Icon(Icons.skip_next_outlined, color: Colors.white),
-          onTapCallback: () {
-            final audioList = context.read<SongsCubit>().allSongs;
-            context.read<NowPlayingAudioCubit>().nextAudio(audioList);
-          },
+          onTapCallback: context.read<NowPlayingAudioCubit>().nextAudio,
         ),
       ],
     );
@@ -102,36 +101,66 @@ class DurationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final player = getIt<AudioPlayer>();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          song.durationLabel,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Colors.white70,
-            letterSpacing: nkNegative0pt31,
-          ),
-        ),
-        Text(
-          song.durationLabel, //TODO: Change to remaining duration
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Colors.white70,
-            letterSpacing: nkNegative0pt31,
-          ),
-        ),
+        DurationBuilder(stream: player.durationStream),
+        DurationBuilder(stream: player.positionStream),
       ],
     );
   }
 }
 
-class AudioPlayingProgress extends StatelessWidget {
-  const AudioPlayingProgress({super.key, required this.song});
+class DurationBuilder extends StatelessWidget {
+  const DurationBuilder({super.key, required this.stream});
 
-  final AudioModel song;
+  final Stream<Duration?> stream;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<Duration?>(
+      stream: stream,
+      builder: (context, snapshot) {
+        final dur = snapshot.data ?? Duration.zero;
+        return Text(
+          dur.toMMSS(),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Colors.white70,
+            letterSpacing: nkNegative0pt31,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class AudioPlayingProgress extends StatefulWidget {
+  const AudioPlayingProgress({super.key});
+
+  @override
+  State<AudioPlayingProgress> createState() => _AudioPlayingProgressState();
+}
+
+class _AudioPlayingProgressState extends State<AudioPlayingProgress> {
+  late final AudioPlayer _player;
+
+  @override
+  void initState() {
+    super.initState();
+    _player = getIt<AudioPlayer>();
+    final pbCubit = context.read<PlayBackCubit>();
+    _player.processingStateStream.listen((state) {
+      if (state == ProcessingState.completed) {
+        pbCubit.setPlayingDone();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final minHeight = nk04;
+
     return SliderTheme(
       data: SliderTheme.of(context).copyWith(
         thumbShape: SliderComponentShape.noThumb,
@@ -144,13 +173,25 @@ class AudioPlayingProgress extends StatelessWidget {
       ),
       child: SizedBox(
         height: nk24,
-        child: Slider(
-          allowedInteraction: SliderInteraction.tapAndSlide,
-          value: 40,
-          min: 0,
-          max: 100,
-          onChanged: (value) {
-            // setState(() => _currentValue = value);
+        child: StreamBuilder<Duration?>(
+          stream: _player.durationStream,
+          builder: (context, durSnapshot) {
+            final totalDur = durSnapshot.data ?? Duration.zero;
+            return StreamBuilder<Duration?>(
+              stream: _player.positionStream,
+              builder: (context, posSnapshot) {
+                final posDur = posSnapshot.data ?? Duration.zero;
+                return Slider(
+                  allowedInteraction: SliderInteraction.tapAndSlide,
+                  value: posDur.inMilliseconds.toDouble(),
+                  min: nk00,
+                  max: totalDur.inMilliseconds.toDouble(),
+                  onChanged: (value) {
+                    context.read<PlayBackCubit>().seekTo(value);
+                  },
+                );
+              },
+            );
           },
         ),
       ),

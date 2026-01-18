@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:playly/core/app/extension/list.dart';
 import 'package:playly/core/presentation/model/audio_model.dart';
+import 'package:playly/core/presentation/provider/audio_model_list_provider.dart';
 import 'package:playly/core/service/permission_service.dart';
 import 'package:playly/features/media_list/domain/usecase/get_songs_uc.dart';
 
@@ -12,16 +13,16 @@ part 'songs_cubit.freezed.dart';
 @Injectable()
 class SongsCubit extends Cubit<SongsState> {
   final GetSongsUc _getSongsUc;
+  final AudioModelListProvider _audioModelListProvider;
   final RequestPermission _requestAudioPermission;
-
-  List<AudioModel> _allSongs = [];
 
   SongsCubit({
     required GetSongsUc getSongsUc,
-
+    required AudioModelListProvider audioModelListProvider,
     @Named.from(RequestAudioPermission)
     required RequestPermission requestAudioPermission,
   }) : _getSongsUc = getSongsUc,
+       _audioModelListProvider = audioModelListProvider,
        _requestAudioPermission = requestAudioPermission,
        super(SongsState.initial());
 
@@ -30,10 +31,12 @@ class SongsCubit extends Cubit<SongsState> {
     if (songs.isEmpty) {
       emit(SongsState.noSong());
     } else {
-      _allSongs = songs.mapIndexed(
-        (index, song) => AudioModel(audio: song, position: index),
+      _audioModelListProvider.setAudioModels(
+        songs.mapIndexed(
+          (index, song) => AudioModel(audio: song, position: index),
+        ),
       );
-      emit(SongsState.loaded(songs: _allSongs));
+      emit(SongsState.loaded(songs: _audioModelListProvider.getAudioModels()));
     }
   }
 
@@ -54,7 +57,8 @@ class SongsCubit extends Cubit<SongsState> {
   }
 
   void filterSongs(String query) {
-    final filteredSongs = _allSongs
+    final filteredSongs = _audioModelListProvider
+        .getAudioModels()
         .where(
           (song) =>
               song.audio.title.toLowerCase().contains(query.toLowerCase()) ||
@@ -64,5 +68,4 @@ class SongsCubit extends Cubit<SongsState> {
         .toList();
     emit(SongsState.loaded(songs: filteredSongs));
   }
-  List<AudioModel> get allSongs => _allSongs;
 }

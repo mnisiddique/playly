@@ -1,3 +1,4 @@
+import 'package:playly/core/app/extension/duration/duration_formatter.dart';
 import 'package:playly/features/media_list/domain/entity/audio_media.dart';
 import 'package:playly/res/index.dart';
 
@@ -23,9 +24,7 @@ class AudioModel {
       return vskEmpty;
     }
     final dur = Duration(milliseconds: audio.duration!);
-    int secInt = (dur.inSeconds % nk60).toInt();
-    String secStr = secInt.toString().padLeft(2, '0');
-    return "${dur.inMinutes}:$secStr";
+    return dur.toMMSS();
   }
 
   String get sizeLabel {

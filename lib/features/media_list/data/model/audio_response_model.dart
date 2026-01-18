@@ -11,6 +11,7 @@ extension AudioResponseModel on SongModel {
       id: id,
       size: size,
       duration: duration,
+      uri: Uri.parse(uri!),
     );
   }
 }
