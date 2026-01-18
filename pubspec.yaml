@@ -54,6 +54,7 @@ dependencies:
   gap: ^3.0.1
   lottie: ^3.3.1
   marquee: ^2.3.0
+  just_audio: ^0.10.5
 
 dev_dependencies:
   flutter_test:
