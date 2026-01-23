@@ -5,7 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:playly/core/presentation/model/audio_model.dart';
 import 'package:playly/core/presentation/provider/audio_model_list_provider.dart';
-import 'package:playly/core/service/audio_session_service.dart';
+import 'package:playly/core/service/audio/audio_session_service.dart';
 
 part 'plaback_state.dart';
 part 'plaback_cubit.freezed.dart';
