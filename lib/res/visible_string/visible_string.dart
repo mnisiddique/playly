@@ -4,6 +4,7 @@ const String vskUnknownAlbum = 'Unknown Album';
 const String vskDuration = 'Duration';
 const String vskMB = 'MB';
 const String vskEmpty = '';
+const String vskNA = 'N/A';
 const String vskSearchMusic = 'Search Music';
 const String vskOpenSettings = 'Open Settings';
 const String vskGrantPermission = 'Grant Permission';
