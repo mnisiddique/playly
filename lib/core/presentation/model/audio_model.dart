@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:playly/core/app/extension/duration/duration_formatter.dart';
 import 'package:playly/features/media_list/domain/entity/audio_media.dart';
 import 'package:playly/res/index.dart';
@@ -8,7 +9,9 @@ class AudioModel {
   AudioModel({required this.audio, required this.position});
   String get artistLabel {
     final artistSmallerCase = audio.artist.toLowerCase();
-    return artistSmallerCase.contains(skUnknown) ? vskUnknownArtist : audio.artist;
+    return artistSmallerCase.contains(skUnknown)
+        ? vskUnknownArtist
+        : audio.artist;
   }
 
   String get albumLabel {
@@ -31,5 +34,9 @@ class AudioModel {
     final mb = 1024 * 1024;
     double sizeInMb = audio.size / mb;
     return "${sizeInMb.toStringAsFixed(nkInt02)} $vskMB";
+  }
+
+  MediaItem toMediaItem() {
+    return MediaItem(id: , title: '');
   }
 }
