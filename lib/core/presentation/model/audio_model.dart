@@ -22,12 +22,14 @@ class AudioModel {
         : audio.album;
   }
 
+  Duration? get audioDuration =>
+      audio.duration == null ? null : Duration(milliseconds: audio.duration!);
+
   String get durationLabel {
-    if (audio.duration == null) {
-      return vskEmpty;
+    if (audioDuration == null) {
+      return vskNA;
     }
-    final dur = Duration(milliseconds: audio.duration!);
-    return dur.toMMSS();
+    return audioDuration!.toMMSS();
   }
 
   String get sizeLabel {
@@ -37,6 +39,17 @@ class AudioModel {
   }
 
   MediaItem toMediaItem() {
-    return MediaItem(id: , title: '');
+    return MediaItem(
+      id: audio.id.toString(),
+      title: audio.title,
+      album: albumLabel,
+      artist: artistLabel,
+      duration: audioDuration,
+      extras: {
+        skUri: audio.uri,
+        skSizeLabel: sizeLabel,
+        skDurationLabel: durationLabel,
+      },
+    );
   }
 }
