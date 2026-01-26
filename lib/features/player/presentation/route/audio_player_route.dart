@@ -42,18 +42,7 @@ class AudioPlayerScreen extends StatelessWidget {
           statusBarIconBrightness: Brightness.light,
           statusBarBrightness: Brightness.dark,
         ),
-        child: AudioPlaybackListeners(
-          child: BlocBuilder<NowPlayingAudioCubit, NowPlayingAudioState>(
-            builder: (context, state) {
-              return state.maybeWhen(
-                orElse: () => const SizedBox.shrink(),
-                nowPlaying: (audio) {
-                  return AudioPlayerScreenContent(song: audio);
-                },
-              );
-            },
-          ),
-        ),
+        child: AudioPlayerScreenContent(song: audio),
       ),
     );
   }

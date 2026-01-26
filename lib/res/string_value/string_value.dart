@@ -6,3 +6,4 @@ const String sk0 = '0';
 const String skUri = 'uri';
 const String skSizeLabel = 'sizeLabel';
 const String skDurationLabel = 'durationLabel';
+const String skPosition = 'position';

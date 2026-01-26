@@ -18,3 +18,5 @@ const String vskPermissionDenialMessage =
     'To list and play the audio files stored on your device, the app needs permission to access your media library';
 const String vskPermissionPermamentlyDenialMessage =
     'To list and play the audio files stored on your device, the app needs permission to access your media library. Please grant the permission from app settings.';
+
+const String vskFailedToLoadAdio = "Failed to load audio";
