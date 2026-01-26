@@ -49,6 +49,7 @@ class AudioModel {
         skUri: audio.uri,
         skSizeLabel: sizeLabel,
         skDurationLabel: durationLabel,
+        skPosition: position,
       },
     );
   }
