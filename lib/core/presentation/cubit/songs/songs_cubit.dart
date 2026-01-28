@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:playly/core/app/extension/list.dart';
 import 'package:playly/core/presentation/model/audio_model.dart';
 import 'package:playly/core/presentation/provider/audio_model_list_provider.dart';
+import 'package:playly/core/service/audio/audio_handler_initializer.dart';
 import 'package:playly/core/service/permission_service.dart';
 import 'package:playly/features/media_list/domain/usecase/get_songs_uc.dart';
 
@@ -15,15 +16,18 @@ class SongsCubit extends Cubit<SongsState> {
   final GetSongsUc _getSongsUc;
   final AudioModelListProvider _audioModelListProvider;
   final RequestPermission _requestAudioPermission;
+  final AudioHandlerInitializer _audioHandlerInitializer;
 
   SongsCubit({
     required GetSongsUc getSongsUc,
     required AudioModelListProvider audioModelListProvider,
     @Named.from(RequestAudioPermission)
     required RequestPermission requestAudioPermission,
+    required AudioHandlerInitializer audioHandlerInitializer,
   }) : _getSongsUc = getSongsUc,
        _audioModelListProvider = audioModelListProvider,
        _requestAudioPermission = requestAudioPermission,
+       _audioHandlerInitializer = audioHandlerInitializer,
        super(SongsState.initial());
 
   void getSongs() async {
@@ -35,6 +39,10 @@ class SongsCubit extends Cubit<SongsState> {
         songs.mapIndexed(
           (index, song) => AudioModel(audio: song, position: index),
         ),
+      );
+      await _audioHandlerInitializer.init();
+      _audioHandlerInitializer.audioHandler.addQueueItems(
+        _audioModelListProvider.getAudioModels().map((song) => song.toMediaItem()).toList(),
       );
       emit(SongsState.loaded(songs: _audioModelListProvider.getAudioModels()));
     }

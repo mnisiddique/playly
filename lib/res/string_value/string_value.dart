@@ -9,3 +9,4 @@ const String skDurationLabel = 'durationLabel';
 const String skPosition = 'position';
 const String skChannelName = 'Playly Audio';
 const String skChannelId = 'mni.siddique.playly.channel.audio';
+const String skPortName = 'playly_audio_port';
