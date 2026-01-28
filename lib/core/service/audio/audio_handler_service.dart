@@ -172,6 +172,17 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
       };
 
   @override
+  Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) async {
+    switch (name) {
+      case skLoadAudio:
+        loadAudio(extras![skAudio] as MediaItem);
+        return true;
+      default:
+        return super.customAction(name, extras);
+    }
+  }
+
+  @override
   Future<void> addQueueItems(List<MediaItem> mediaItems) async {
     if (queue.value.isEmpty) {
       queue.add(List<MediaItem>.from(mediaItems));
