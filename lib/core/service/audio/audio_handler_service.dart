@@ -31,6 +31,7 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
           queue.value.isNotEmpty &&
           index < queue.value.length) {
         mediaItem.add(queue.value[index]);
+        currentPlayingIndex = index;
       }
     });
   }
@@ -58,12 +59,13 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
   void loadAudio(MediaItem mediaItemObject) async {
     try {
       await _sessionService.configAudioSession(_audioPlayer);
-      final Uri audioUri = mediaItemObject.extras![skUri];
-      await stop();
-      await _audioPlayer.setAudioSource(AudioSource.uri(audioUri));
+
+      currentPlayingIndex = mediaItemObject.extras![skPosition];
+
+      await _audioPlayer.seek(Duration.zero, index: currentPlayingIndex);
+
       mediaItem.add(mediaItemObject);
       play();
-      currentPlayingIndex = mediaItemObject.extras![skPosition];
     } catch (e) {
       playbackState.add(
         playbackState.value.copyWith(
@@ -171,8 +173,16 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> addQueueItems(List<MediaItem> mediaItems) async {
-    final newQueue = queue.value..addAll(mediaItems);
-    queue.add(newQueue);
+    if (queue.value.isEmpty) {
+      queue.add(List<MediaItem>.from(mediaItems));
+      final audioSources = mediaItems.map((item) {
+        return AudioSource.uri(
+          Uri.parse(item.extras![skUri]),
+          tag: item, // Link the metadata to the audio source
+        );
+      }).toList();
+      await _audioPlayer.setAudioSources(audioSources);
+    }
   }
 
   @override
@@ -187,7 +197,17 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> stop() async {
-    return _audioPlayer.stop();
+    await _audioPlayer.stop();
+    // 2. Broadcast the 'idle' state so the notification disappears
+    playbackState.add(
+      playbackState.value.copyWith(
+        playing: false,
+        processingState: AudioProcessingState.idle,
+      ),
+    );
+    // 3. Very important: Call super.stop()
+    // This tells audio_service to shut down the background isolate
+    await super.stop();
   }
 
   @override
