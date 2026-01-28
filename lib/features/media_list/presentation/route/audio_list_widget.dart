@@ -4,9 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:on_audio_query_pluse/on_audio_query.dart';
 import 'package:playly/core/app/extension/context/media_query.dart';
 import 'package:playly/core/app/extension/string/casing.dart';
+import 'package:playly/core/app/injector/auto_injector.dart';
 import 'package:playly/core/app/navigation/named_route.dart';
-import 'package:playly/core/presentation/cubit/now_playing_audio/now_playing_audio_cubit.dart';
 import 'package:playly/core/presentation/model/audio_model.dart';
+import 'package:playly/core/service/audio/audio_handler_initializer.dart';
 import 'package:playly/features/media_list/domain/entity/audio_media.dart';
 import 'package:playly/features/media_list/presentation/cubit/audio_search/audio_search_cubit.dart';
 
@@ -164,7 +165,10 @@ class AudioListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: () {
-        context.read<NowPlayingAudioCubit>().setNowPlayingAudio(song);
+        getIt<AudioHandlerInitializer>().audioHandler.customAction(
+          skLoadAudio,
+          {skAudio: song.toMediaItem()},
+        );
         context.pushNamed(NamedRoute.audioPlayer.routeName);
       },
       isThreeLine: true,
@@ -220,10 +224,7 @@ class AudioArtWorkWidget extends StatelessWidget {
         height: nk56,
         width: nk56,
         decoration: BoxDecoration(
-          border: Border.all(
-            width: nk01,
-            color: ColorGen.kOrbitStroke,
-          ),
+          border: Border.all(width: nk01, color: ColorGen.kOrbitStroke),
           borderRadius: BorderRadius.circular(nk08),
         ),
         child: Icon(Icons.music_note_rounded, color: Colors.white54),
