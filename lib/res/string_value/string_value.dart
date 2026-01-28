@@ -7,3 +7,5 @@ const String skUri = 'uri';
 const String skSizeLabel = 'sizeLabel';
 const String skDurationLabel = 'durationLabel';
 const String skPosition = 'position';
+const String skChannelName = 'Playly Audio';
+const String skChannelId = 'mni.siddique.playly.channel.audio';
