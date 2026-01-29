@@ -188,7 +188,7 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
       queue.add(List<MediaItem>.from(mediaItems));
       final audioSources = mediaItems.map((item) {
         return AudioSource.uri(
-          Uri.parse(item.extras![skUri]),
+          item.extras![skUri],
           tag: item, // Link the metadata to the audio source
         );
       }).toList();
