@@ -1,12 +1,10 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:playly/core/app/extension/duration/duration_formatter.dart';
 import 'package:playly/core/app/injector/auto_injector.dart';
-import 'package:playly/core/presentation/cubit/now_playing_audio/now_playing_audio_cubit.dart';
-import 'package:playly/core/presentation/model/audio_model.dart';
 import 'package:playly/core/presentation/widget/neumorphic_icon_button.dart';
-import 'package:playly/features/player/presentation/cubit/playback/plaback_cubit.dart';
+import 'package:playly/core/service/audio/audio_handler_initializer.dart';
+import 'package:playly/core/service/audio/live_playback_update.dart';
 import 'package:playly/res/index.dart';
 
 class PlaybackControlWidget extends StatelessWidget {
@@ -35,6 +33,8 @@ class ControlRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final separatorWidth = nk42;
+    final audioHandler = getIt<AudioHandlerInitializer>().audioHandler;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -42,27 +42,42 @@ class ControlRow extends StatelessWidget {
         NeumorphicIconButton(
           radius: nk48,
           icon: Icon(Icons.skip_previous_outlined, color: Colors.white),
-          onTapCallback: context.read<NowPlayingAudioCubit>().previousAudio,
+          onTapCallback: audioHandler.skipToPrevious,
         ),
         HorizontalLine(width: separatorWidth),
-        NeumorphicIconButton(
-          radius: nk64,
-          icon: Icon(
-            Icons.play_arrow_outlined,
-            size: nk48,
-            color: Colors.white,
-          ),
-          onTapCallback: () {
-            context.read<PlayBackCubit>().play();
-          },
-        ),
+        PlayButton(audioHandler: audioHandler),
         HorizontalLine(width: separatorWidth),
         NeumorphicIconButton(
           radius: nk48,
           icon: Icon(Icons.skip_next_outlined, color: Colors.white),
-          onTapCallback: context.read<NowPlayingAudioCubit>().nextAudio,
+          onTapCallback: audioHandler.skipToNext,
         ),
       ],
+    );
+  }
+}
+
+class PlayButton extends StatelessWidget {
+  final AudioHandler audioHandler;
+  const PlayButton({super.key, required this.audioHandler});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<PlaybackState>(
+      stream: audioHandler.playbackState,
+      builder: (context, asyncSnapshot) {
+        final state = asyncSnapshot.data;
+        final isPlaying = state == null ? false : state.playing;
+        return NeumorphicIconButton(
+          radius: nk64,
+          icon: Icon(
+            isPlaying ? Icons.pause_outlined : Icons.play_arrow_outlined,
+            size: nk48,
+            color: Colors.white,
+          ),
+          onTapCallback: isPlaying ? audioHandler.pause : audioHandler.play,
+        );
+      },
     );
   }
 }
@@ -96,17 +111,18 @@ class VerticalLine extends StatelessWidget {
 }
 
 class DurationWidget extends StatelessWidget {
-  final AudioModel song;
-  const DurationWidget({super.key, required this.song});
+  final Duration? totalDuration;
+  const DurationWidget({super.key, required this.totalDuration});
 
   @override
   Widget build(BuildContext context) {
-    final player = getIt<AudioPlayer>();
+    final audioHandler = getIt<AudioHandlerInitializer>().audioHandler;
+    audioHandler.mediaItem;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        DurationBuilder(stream: player.durationStream),
-        DurationBuilder(stream: player.positionStream),
+        DurationText(dur: totalDuration),
+        DurationBuilder(stream: getIt<LivePlaybackUpdate>().positionStream),
       ],
     );
   }
@@ -123,44 +139,44 @@ class DurationBuilder extends StatelessWidget {
       stream: stream,
       builder: (context, snapshot) {
         final dur = snapshot.data ?? Duration.zero;
-        return Text(
-          dur.toMMSS(),
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Colors.white70,
-            letterSpacing: nkNegative0pt31,
-          ),
-        );
+        return DurationText(dur: dur);
       },
     );
   }
 }
 
+class DurationText extends StatelessWidget {
+  const DurationText({super.key, required this.dur});
+
+  final Duration? dur;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      dur == null ? vskNA : dur!.toMMSS(),
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: Colors.white70,
+        letterSpacing: nkNegative0pt31,
+      ),
+    );
+  }
+}
+
 class AudioPlayingProgress extends StatefulWidget {
-  const AudioPlayingProgress({super.key});
+  final Duration? totalDuration;
+  const AudioPlayingProgress({super.key, required this.totalDuration});
 
   @override
   State<AudioPlayingProgress> createState() => _AudioPlayingProgressState();
 }
 
 class _AudioPlayingProgressState extends State<AudioPlayingProgress> {
-  late final AudioPlayer _player;
-
-  @override
-  void initState() {
-    super.initState();
-    _player = getIt<AudioPlayer>();
-    final pbCubit = context.read<PlayBackCubit>();
-    _player.processingStateStream.listen((state) {
-      if (state == ProcessingState.completed) {
-        pbCubit.setPlayingDone();
-      }
-    });
-  }
+  double _draggedProgress = nk00;
 
   @override
   Widget build(BuildContext context) {
     final minHeight = nk04;
-
+    final audioHandler = getIt<AudioHandlerInitializer>().audioHandler;
     return SliderTheme(
       data: SliderTheme.of(context).copyWith(
         thumbShape: SliderComponentShape.noThumb,
@@ -174,23 +190,38 @@ class _AudioPlayingProgressState extends State<AudioPlayingProgress> {
       child: SizedBox(
         height: nk24,
         child: StreamBuilder<Duration?>(
-          stream: _player.durationStream,
-          builder: (context, durSnapshot) {
-            final totalDur = durSnapshot.data ?? Duration.zero;
-            return StreamBuilder<Duration?>(
-              stream: _player.positionStream,
-              builder: (context, posSnapshot) {
-                final posDur = posSnapshot.data ?? Duration.zero;
-                return Slider(
-                  allowedInteraction: SliderInteraction.tapAndSlide,
-                  value: posDur.inMilliseconds.toDouble(),
-                  min: nk00,
-                  max: totalDur.inMilliseconds.toDouble(),
-                  onChanged: (value) {
-                    context.read<PlayBackCubit>().seekTo(value);
-                  },
-                );
-              },
+          stream: getIt<LivePlaybackUpdate>().positionStream,
+          builder: (context, posSnapshot) {
+            final posDur = posSnapshot.data ?? Duration.zero;
+            final computedTotal = widget.totalDuration == null
+                ? Duration(seconds: nkInt01)
+                : widget.totalDuration!;
+            return Slider(
+              allowedInteraction: SliderInteraction.tapAndSlide,
+              value: widget.totalDuration == null
+                  ? nk01
+                  : posDur.inMilliseconds.toDouble().clamp(
+                      nk00,
+                      computedTotal.inMilliseconds.toDouble(),
+                    ),
+              min: nk00,
+              max: widget.totalDuration == null
+                  ? nk01
+                  : computedTotal.inMilliseconds.toDouble(),
+              onChanged: widget.totalDuration == null
+                  ? null
+                  : (value) {
+                      // audioHandler.seek(Duration(milliseconds: value.toInt()));
+                      _draggedProgress = value;
+                    },
+              onChangeEnd: widget.totalDuration == null
+                  ? null
+                  : (value) {
+                      final dur = Duration(
+                        milliseconds: _draggedProgress.toInt(),
+                      );
+                      audioHandler.seek(dur);
+                    },
             );
           },
         ),

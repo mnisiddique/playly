@@ -12,3 +12,4 @@ const int nkInt60 = 60;
 const int nkInt45 = 45;
 const int nkInt404 = 404;
 const int nkInt300 = 300;
+const int nkInt500 = 500;

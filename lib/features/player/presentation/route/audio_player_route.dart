@@ -1,17 +1,16 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marquee/marquee.dart';
 import 'package:on_audio_query_pluse/on_audio_query.dart';
 import 'package:playly/core/app/extension/context/media_query.dart';
 import 'package:playly/core/app/extension/string/casing.dart';
+import 'package:playly/core/app/injector/auto_injector.dart';
 import 'package:playly/core/app/navigation/named_route.dart';
-import 'package:playly/core/presentation/cubit/now_playing_audio/now_playing_audio_cubit.dart';
-import 'package:playly/core/presentation/model/audio_model.dart';
 import 'package:playly/core/presentation/widget/app_background.dart';
-import 'package:playly/features/player/presentation/route/listener.dart';
+import 'package:playly/core/service/audio/audio_handler_initializer.dart';
 import 'package:playly/features/player/presentation/route/playback_control_widget.dart';
 import 'package:playly/res/index.dart';
 
@@ -42,15 +41,32 @@ class AudioPlayerScreen extends StatelessWidget {
           statusBarIconBrightness: Brightness.light,
           statusBarBrightness: Brightness.dark,
         ),
-        child: AudioPlayerScreenContent(song: audio),
+        child: MediaItemBuilder(),
       ),
+    );
+  }
+}
+
+class MediaItemBuilder extends StatelessWidget {
+  const MediaItemBuilder({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<MediaItem?>(
+      stream: getIt<AudioHandlerInitializer>().audioHandler.mediaItem,
+      builder: (ctx, snapshot) {
+        if (snapshot.hasData) {
+          return AudioPlayerScreenContent(song: snapshot.data!);
+        }
+        return Text(vskFailedToLoadAdio);
+      },
     );
   }
 }
 
 class AudioPlayerScreenContent extends StatelessWidget {
   const AudioPlayerScreenContent({super.key, required this.song});
-  final AudioModel song;
+  final MediaItem song;
 
   @override
   Widget build(BuildContext context) {
@@ -68,8 +84,8 @@ class AudioPlayerScreenContent extends StatelessWidget {
               NowPlayingTitle(song: song),
               NowPlayingArtist(song: song),
               Gap(nk16),
-              AudioPlayingProgress(),
-              DurationWidget(song: song),
+              AudioPlayingProgress(totalDuration: song.duration,),
+              DurationWidget(totalDuration: song.duration),
               Gap(nk24),
               PlaybackControlWidget(),
             ],
@@ -83,12 +99,12 @@ class AudioPlayerScreenContent extends StatelessWidget {
 class NowPlayingArtist extends StatelessWidget {
   const NowPlayingArtist({super.key, required this.song});
 
-  final AudioModel song;
+  final MediaItem song;
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      song.artistLabel.toTitleCase(),
+      song.artist!.toTitleCase(),
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
         color: Colors.white70,
         letterSpacing: nkNegative0pt31,
@@ -100,7 +116,7 @@ class NowPlayingArtist extends StatelessWidget {
 class NowPlayingTitle extends StatelessWidget {
   const NowPlayingTitle({super.key, required this.song});
 
-  final AudioModel song;
+  final MediaItem song;
 
   @override
   Widget build(BuildContext context) {
@@ -109,8 +125,8 @@ class NowPlayingTitle extends StatelessWidget {
           MediaQuery.of(context).size.width * nk0pt7, // Force a specific width
       height: nk32, // Use a static height for testing
       child: Marquee(
-        key: ValueKey(song.audio.title), // Crucial for audio players
-        text: song.audio.title,
+        key: ValueKey(song.title), // Crucial for audio players
+        text: song.title,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
           color: Colors.white,
           letterSpacing: nkNegative0pt31,
@@ -125,14 +141,14 @@ class NowPlayingTitle extends StatelessWidget {
 }
 
 class NowPlayingArtWork extends StatelessWidget {
-  final AudioModel song;
+  final MediaItem song;
   const NowPlayingArtWork({super.key, required this.song});
 
   @override
   Widget build(BuildContext context) {
     final awDimension = context.scrSize.width - nk32;
     return QueryArtworkWidget(
-      id: song.audio.id,
+      id: int.parse(song.id),
       type: ArtworkType.AUDIO,
       artworkHeight: awDimension,
       artworkWidth: awDimension,
@@ -177,14 +193,14 @@ class LeadingBackButton extends StatelessWidget {
 class SizeLabel extends StatelessWidget {
   const SizeLabel({super.key, required this.song});
 
-  final AudioModel song;
+  final MediaItem song;
 
   @override
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.topRight,
       child: Text(
-        song.sizeLabel,
+        song.extras![skSizeLabel],
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
           color: Colors.white,
           letterSpacing: nk00,
