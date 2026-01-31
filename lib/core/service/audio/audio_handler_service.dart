@@ -85,7 +85,6 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
             controls: [
               MediaControl.skipToPrevious,
               if (playing) MediaControl.pause else MediaControl.play,
-              MediaControl.stop,
               MediaControl.skipToNext,
             ],
             systemActions: const {
