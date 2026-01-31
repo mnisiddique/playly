@@ -36,7 +36,7 @@ class AudioHandlerInitializer {
         // Highly recommended for Android 13+ support:
         androidShowNotificationBadge: true,
         notificationColor: ColorGen.kCelestialDeep,
-        androidNotificationIcon: "drawable/ic_media_play",
+        androidNotificationIcon: skNotificationIconPath,
       ),
     );
   }
