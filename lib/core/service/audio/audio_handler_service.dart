@@ -1,4 +1,3 @@
-
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:playly/core/service/audio/audio_session_service.dart';
@@ -59,12 +58,14 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
 
   void loadAudio(MediaItem mediaItemObject) async {
     try {
+      mediaItem.add(mediaItemObject);
+
       await _sessionService.configAudioSession(_audioPlayer);
 
       currentPlayingIndex = mediaItemObject.extras![skPosition];
 
       await _audioPlayer.seek(Duration.zero, index: currentPlayingIndex);
-      mediaItem.add(mediaItemObject);
+
       play();
     } catch (e) {
       playbackState.add(
@@ -81,7 +82,7 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
       (PlaybackEvent event) {
         final playing = _audioPlayer.playing;
         playbackState.add(
-          playbackState.value.copyWith(
+          PlaybackState(
             controls: [
               MediaControl.skipToPrevious,
               if (playing) MediaControl.pause else MediaControl.play,
@@ -89,15 +90,14 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
             ],
             systemActions: const {
               MediaAction.skipToPrevious,
-              MediaAction.play,
-              MediaAction.pause,
               MediaAction.playPause,
               MediaAction.skipToNext,
               MediaAction.seek,
               MediaAction.seekForward,
               MediaAction.seekBackward,
             },
-            androidCompactActionIndices: const [0, 1, 2],
+            androidCompactActionIndices: const [1],
+            // androidCompactActionIndices: const [0, 1, 2],
             processingState: const {
               ProcessingState.idle: AudioProcessingState.idle,
               ProcessingState.loading: AudioProcessingState.loading,
@@ -109,6 +109,7 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
             updatePosition: _audioPlayer.position,
             bufferedPosition: _audioPlayer.bufferedPosition,
             speed: _audioPlayer.speed,
+            updateTime: DateTime.now(),
             queueIndex:
                 _audioPlayer.currentIndex ??
                 (currentPlayingIndex < 0 ? 0 : currentPlayingIndex),

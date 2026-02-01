@@ -45,6 +45,7 @@ class AudioModel {
       album: albumLabel,
       artist: artistLabel,
       duration: audioDuration,
+      isLive: false,
       extras: {
         skAudioId: audio.id,
         skSizeLabel: sizeLabel,
