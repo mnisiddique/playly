@@ -26,6 +26,7 @@
             android:foregroundServiceType="mediaPlayback">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="android.intent.browse.MediaBrowserService" />
             </intent-filter>
         </service>
 
@@ -34,6 +35,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
+                
             </intent-filter>
         </receiver>
         <activity
