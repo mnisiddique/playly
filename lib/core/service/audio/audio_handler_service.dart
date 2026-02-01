@@ -64,7 +64,6 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
       currentPlayingIndex = mediaItemObject.extras![skPosition];
 
       await _audioPlayer.seek(Duration.zero, index: currentPlayingIndex);
-
       mediaItem.add(mediaItemObject);
       play();
     } catch (e) {
@@ -196,7 +195,7 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
       queue.add(List<MediaItem>.from(mediaItems));
       final audioSources = mediaItems.map((item) {
         return AudioSource.uri(
-          item.extras![skUri],
+          Uri.parse(item.id),
           tag: item, // Link the metadata to the audio source
         );
       }).toList();

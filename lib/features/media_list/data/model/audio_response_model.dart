@@ -5,7 +5,7 @@ import 'package:playly/res/visible_string/visible_string.dart';
 extension AudioResponseModel on SongModel {
   AudioEntity toEntity() {
     return AudioEntity(
-      title: displayName,
+      title: title,
       artist: artist ?? vskUnknownArtist,
       album: album ?? vskUnknownAlbum,
       id: id,

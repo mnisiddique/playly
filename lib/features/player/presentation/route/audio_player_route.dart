@@ -84,7 +84,7 @@ class AudioPlayerScreenContent extends StatelessWidget {
               NowPlayingTitle(song: song),
               NowPlayingArtist(song: song),
               Gap(nk16),
-              AudioPlayingProgress(totalDuration: song.duration,),
+              AudioPlayingProgress(totalDuration: song.duration),
               DurationWidget(totalDuration: song.duration),
               Gap(nk24),
               PlaybackControlWidget(),
@@ -148,7 +148,7 @@ class NowPlayingArtWork extends StatelessWidget {
   Widget build(BuildContext context) {
     final awDimension = context.scrSize.width - nk32;
     return QueryArtworkWidget(
-      id: int.parse(song.id),
+      id: song.extras![skAudioId],
       type: ArtworkType.AUDIO,
       artworkHeight: awDimension,
       artworkWidth: awDimension,

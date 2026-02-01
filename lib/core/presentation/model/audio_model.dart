@@ -40,13 +40,13 @@ class AudioModel {
 
   MediaItem toMediaItem() {
     return MediaItem(
-      id: audio.id.toString(),
+      id: audio.uri.toString(),
       title: audio.title,
       album: albumLabel,
       artist: artistLabel,
       duration: audioDuration,
       extras: {
-        skUri: audio.uri,
+        skAudioId: audio.id,
         skSizeLabel: sizeLabel,
         skDurationLabel: durationLabel,
         skPosition: position,
