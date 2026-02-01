@@ -7,10 +7,9 @@ import 'package:marquee/marquee.dart';
 import 'package:on_audio_query_pluse/on_audio_query.dart';
 import 'package:playly/core/app/extension/context/media_query.dart';
 import 'package:playly/core/app/extension/string/casing.dart';
-import 'package:playly/core/app/injector/auto_injector.dart';
 import 'package:playly/core/app/navigation/named_route.dart';
 import 'package:playly/core/presentation/widget/app_background.dart';
-import 'package:playly/core/service/audio/audio_handler_initializer.dart';
+import 'package:playly/core/presentation/widget/media_item_builder.dart';
 import 'package:playly/features/player/presentation/route/playback_control_widget.dart';
 import 'package:playly/res/index.dart';
 
@@ -41,25 +40,12 @@ class AudioPlayerScreen extends StatelessWidget {
           statusBarIconBrightness: Brightness.light,
           statusBarBrightness: Brightness.dark,
         ),
-        child: MediaItemBuilder(),
+        child: MediaItemBuilder(
+          onData: (song) => AudioPlayerScreenContent(song: song),
+          onError: (error) =>
+              error is String ? Text(error) : Text(vskFailedToLoadAdio),
+        ),
       ),
-    );
-  }
-}
-
-class MediaItemBuilder extends StatelessWidget {
-  const MediaItemBuilder({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<MediaItem?>(
-      stream: getIt<AudioHandlerInitializer>().audioHandler.mediaItem,
-      builder: (ctx, snapshot) {
-        if (snapshot.hasData) {
-          return AudioPlayerScreenContent(song: snapshot.data!);
-        }
-        return Text(vskFailedToLoadAdio);
-      },
     );
   }
 }
