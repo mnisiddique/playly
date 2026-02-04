@@ -176,6 +176,7 @@ class AudioListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: () {
+        FocusScope.of(context).unfocus();
         getIt<AudioHandlerInitializer>().audioHandler.customAction(
           skLoadAudio,
           {skAudio: song.toMediaItem()},
