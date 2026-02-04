@@ -185,7 +185,7 @@ class AudioListTile extends StatelessWidget {
       },
       isThreeLine: true,
       leading: AudioArtWorkWidget(song: song.audio),
-      trailing: isPlaying ? Icon(Icons.play_arrow) : null,
+      trailing: isPlaying ? Icon(Icons.play_arrow, color: ColorGen.kDesertGold) : null,
       title: Text(
         song.audio.title,
         maxLines: nkInt01,
