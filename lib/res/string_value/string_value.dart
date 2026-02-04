@@ -12,5 +12,7 @@ const String skChannelName = 'Playly Audio';
 const String skChannelId = 'mni.siddique.playly.channel.audio';
 const String skPortName = 'playly_audio_port';
 const String skLoadAudio = 'loadAudio';
+const String skUpdatePlayMode = 'updatePlayMode';
 const String skAudio = 'audio';
+const String skPlayModeModel = 'playModeModel';
 const String skNotificationIconPath = 'drawable/ic_stat_music_note';

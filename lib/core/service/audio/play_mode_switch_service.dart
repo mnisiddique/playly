@@ -3,6 +3,7 @@ import 'package:playly/core/app/injector/auto_injector.dart';
 import 'package:playly/core/service/audio/audio_handler_initializer.dart';
 import 'package:playly/core/service/audio/play_mode_model.dart';
 import 'package:playly/core/service/cache/play_mode_cache_service.dart';
+import 'package:playly/res/string_value/string_value.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 @LazySingleton()
@@ -53,6 +54,7 @@ class PlayModeSwitchService {
       _cacheService.cache(nextMode.playMode),
     ];
     await Future.wait(futures);
+    handler.customAction(skUpdatePlayMode, {skPlayModeModel: nextMode});
     _isSwitching = false;
   }
 }
