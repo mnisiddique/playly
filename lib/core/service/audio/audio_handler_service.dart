@@ -130,19 +130,13 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
     switch (repeatMode) {
       case AudioServiceRepeatMode.none:
         await _audioPlayer.setLoopMode(LoopMode.off);
-        // await setShuffleMode(AudioServiceShuffleMode.none);
-        // _playModeCacheService.cache(PlayMode.none);
         break;
       case AudioServiceRepeatMode.one:
         await _audioPlayer.setLoopMode(LoopMode.one);
-        // await setShuffleMode(AudioServiceShuffleMode.none);
-        // _playModeCacheService.cache(PlayMode.repeatCurrent);
         break;
       case AudioServiceRepeatMode.all:
       case AudioServiceRepeatMode.group:
         await _audioPlayer.setLoopMode(LoopMode.all);
-        // await setShuffleMode(AudioServiceShuffleMode.none);
-        // _playModeCacheService.cache(PlayMode.repeatAll);
         break;
     }
     playbackState.add(playbackState.value.copyWith(repeatMode: repeatMode));
