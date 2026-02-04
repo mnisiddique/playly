@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:playly/core/app/extension/duration/duration_formatter.dart';
 import 'package:playly/core/app/injector/auto_injector.dart';
 import 'package:playly/core/presentation/widget/neumorphic_icon_button.dart';
+import 'package:playly/core/presentation/widget/playback_state_builder.dart';
 import 'package:playly/core/service/audio/audio_handler_initializer.dart';
 import 'package:playly/core/service/audio/live_playback_update.dart';
+import 'package:playly/features/player/presentation/route/play_mode_button.dart';
 import 'package:playly/res/index.dart';
 
 class PlaybackControlWidget extends StatelessWidget {
@@ -16,12 +18,7 @@ class PlaybackControlWidget extends StatelessWidget {
       children: [
         ControlRow(),
         VerticalLine(height: nk24),
-        NeumorphicIconButton(
-          radius: nk24,
-          gap: nk08,
-          icon: Icon(Icons.shuffle_outlined, color: Colors.white),
-          onTapCallback: () {},
-        ),
+        PlayerModeButton(),
       ],
     );
   }
@@ -63,11 +60,9 @@ class PlayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<PlaybackState>(
-      stream: audioHandler.playbackState,
-      builder: (context, asyncSnapshot) {
-        final state = asyncSnapshot.data;
-        final isPlaying = state == null ? false : state.playing;
+    return PlaybackStateBuilder(
+      builder: (playbackState) {
+        final isPlaying = playbackState == null ? false : playbackState.playing;
         return NeumorphicIconButton(
           radius: nk64,
           icon: Icon(

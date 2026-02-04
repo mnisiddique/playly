@@ -1,27 +1,27 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:playly/core/service/audio/audio_session_service.dart';
-import 'package:playly/core/service/cache/repeat_mode_cache_service.dart';
+import 'package:playly/core/service/cache/play_mode_cache_service.dart';
 import 'package:playly/res/index.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AudioHandlerService extends BaseAudioHandler with SeekHandler {
   final AudioPlayer _audioPlayer;
   final AudioSessionService _sessionService;
-  final RepeatModeCacheService _repeatModeCache;
+  final PlayModeCacheService _playModeCacheService;
 
   int currentPlayingIndex = -1;
 
   AudioHandlerService({
     required AudioPlayer audioPlayer,
     required AudioSessionService sessionService,
-    required RepeatModeCacheService repeatModeCache,
+    required PlayModeCacheService repeatModeCache,
   }) : _sessionService = sessionService,
        _audioPlayer = audioPlayer,
-       _repeatModeCache = repeatModeCache {
+       _playModeCacheService = repeatModeCache {
     setInitialPlaybackState();
     notifyAudioHandlerAboutPlaybackEvents();
-    loadRepeatMode();
+    loadPlayMode();
     listenAutoAudioChange();
   }
 
@@ -50,9 +50,7 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
     return AudioHandlerService(
       audioPlayer: AudioPlayer(),
       sessionService: AudioSessionServiceImpl(),
-      repeatModeCache: RepeatModeCacheServiceImpl(
-        pref: SharedPreferencesAsync(),
-      ),
+      repeatModeCache: PlayModeCacheServiceImpl(pref: SharedPreferencesAsync()),
     );
   }
 
@@ -132,19 +130,19 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
     switch (repeatMode) {
       case AudioServiceRepeatMode.none:
         await _audioPlayer.setLoopMode(LoopMode.off);
-        await setShuffleMode(AudioServiceShuffleMode.all);
-        _repeatModeCache.cache(AppRepeatMode.none);
+        // await setShuffleMode(AudioServiceShuffleMode.none);
+        // _playModeCacheService.cache(PlayMode.none);
         break;
       case AudioServiceRepeatMode.one:
         await _audioPlayer.setLoopMode(LoopMode.one);
-        await setShuffleMode(AudioServiceShuffleMode.none);
-        _repeatModeCache.cache(AppRepeatMode.current);
+        // await setShuffleMode(AudioServiceShuffleMode.none);
+        // _playModeCacheService.cache(PlayMode.repeatCurrent);
         break;
       case AudioServiceRepeatMode.all:
       case AudioServiceRepeatMode.group:
         await _audioPlayer.setLoopMode(LoopMode.all);
-        await setShuffleMode(AudioServiceShuffleMode.none);
-        _repeatModeCache.cache(AppRepeatMode.all);
+        // await setShuffleMode(AudioServiceShuffleMode.none);
+        // _playModeCacheService.cache(PlayMode.repeatAll);
         break;
     }
     playbackState.add(playbackState.value.copyWith(repeatMode: repeatMode));
@@ -155,7 +153,6 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
     if (shuffleMode == AudioServiceShuffleMode.none) {
       await _audioPlayer.setShuffleModeEnabled(false);
     } else {
-      // This randomizes the internal order of the playlist
       await _audioPlayer.shuffle();
       await _audioPlayer.setShuffleModeEnabled(true);
     }
@@ -164,17 +161,13 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
     playbackState.add(playbackState.value.copyWith(shuffleMode: shuffleMode));
   }
 
-  Future<void> loadRepeatMode() async {
-    final mode = await _repeatModeCache.getCache();
-    setRepeatMode(fromAppRepeatMode(mode));
+  Future<void> loadPlayMode() async {
+    final model = await _playModeCacheService.getCache();
+    Future.wait([
+      setRepeatMode(model.toRepeatMode()),
+      setShuffleMode(model.toShuffleMode()),
+    ]);
   }
-
-  AudioServiceRepeatMode fromAppRepeatMode(AppRepeatMode mode) =>
-      switch (mode) {
-        AppRepeatMode.all => AudioServiceRepeatMode.all,
-        AppRepeatMode.current => AudioServiceRepeatMode.one,
-        AppRepeatMode.none => AudioServiceRepeatMode.none,
-      };
 
   @override
   Future<dynamic> customAction(
