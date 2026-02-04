@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:playly/core/service/audio/audio_session_service.dart';
+import 'package:playly/core/service/audio/play_mode_model.dart';
 import 'package:playly/core/service/cache/play_mode_cache_service.dart';
 import 'package:playly/res/index.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +12,7 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
   final PlayModeCacheService _playModeCacheService;
 
   int currentPlayingIndex = -1;
+  PlayModeModel _model = PlayModeModel(playMode: PlayMode.none);
 
   AudioHandlerService({
     required AudioPlayer audioPlayer,
@@ -108,6 +110,8 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
             bufferedPosition: _audioPlayer.bufferedPosition,
             speed: _audioPlayer.speed,
             updateTime: DateTime.now(),
+            repeatMode: _model.toRepeatMode(),
+            shuffleMode: _model.toShuffleMode(),
             queueIndex:
                 _audioPlayer.currentIndex ??
                 (currentPlayingIndex < 0 ? 0 : currentPlayingIndex),
@@ -161,6 +165,17 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
       setRepeatMode(model.toRepeatMode()),
       setShuffleMode(model.toShuffleMode()),
     ]);
+    updatePlayMode(model);
+  }
+
+  void updatePlayMode(PlayModeModel model) {
+    playbackState.add(
+      playbackState.value.copyWith(
+        repeatMode: model.toRepeatMode(),
+        shuffleMode: model.toShuffleMode(),
+      ),
+    );
+    _model = model;
   }
 
   @override
@@ -171,6 +186,9 @@ class AudioHandlerService extends BaseAudioHandler with SeekHandler {
     switch (name) {
       case skLoadAudio:
         loadAudio(extras![skAudio] as MediaItem);
+        return true;
+      case skUpdatePlayMode:
+        updatePlayMode(extras![skPlayModeModel] as PlayModeModel);
         return true;
       default:
         return super.customAction(name, extras);
