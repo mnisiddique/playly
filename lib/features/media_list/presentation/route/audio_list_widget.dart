@@ -7,7 +7,7 @@ import 'package:playly/core/app/extension/string/casing.dart';
 import 'package:playly/core/app/injector/auto_injector.dart';
 import 'package:playly/core/app/navigation/named_route.dart';
 import 'package:playly/core/presentation/model/audio_model.dart';
-import 'package:playly/core/presentation/widget/media_item_builder.dart';
+import 'package:playly/core/presentation/widget/playback_state_builder.dart';
 import 'package:playly/core/service/audio/audio_handler_initializer.dart';
 import 'package:playly/features/media_list/domain/entity/audio_media.dart';
 import 'package:playly/features/media_list/presentation/cubit/audio_search/audio_search_cubit.dart';
@@ -33,15 +33,15 @@ class AudioListWidget extends StatelessWidget {
             itemCount: songs.length,
             itemBuilder: (ctx, id) {
               final song = songs[id];
-              return MediaItemBuilder(
-                onData: (item) {
-                  final int position = item.extras![skPosition];
+              return PlaybackStateBuilder(
+                builder: (state) {
+                  final isIndexMatched = state?.queueIndex == id;
+                  final isInPlayingMode = state?.playing ?? false;
                   return AudioListTile(
                     song: song,
-                    isPlaying: position == song.position,
+                    isPlaying: isIndexMatched && isInPlayingMode,
                   );
                 },
-                onError: (error) => AudioListTile(song: song, isPlaying: false),
               );
             },
           ),
@@ -185,7 +185,9 @@ class AudioListTile extends StatelessWidget {
       },
       isThreeLine: true,
       leading: AudioArtWorkWidget(song: song.audio),
-      trailing: isPlaying ? Icon(Icons.play_arrow, color: ColorGen.kDesertGold) : null,
+      trailing: isPlaying
+          ? Icon(Icons.play_arrow, color: ColorGen.kDesertGold)
+          : null,
       title: Text(
         song.audio.title,
         maxLines: nkInt01,
