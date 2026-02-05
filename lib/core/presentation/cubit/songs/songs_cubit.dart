@@ -40,7 +40,6 @@ class SongsCubit extends Cubit<SongsState> {
           (index, song) => AudioModel(audio: song, position: index),
         ),
       );
-      await _audioHandlerInitializer.init();
       await _audioHandlerInitializer.audioHandler.addQueueItems(
         _audioModelListProvider
             .getAudioModels()
