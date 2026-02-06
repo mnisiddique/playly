@@ -67,3 +67,4 @@ android/deployment_info.json
 ios/deployment_info.json
 common_lane/fastlane/report.xml
 common_lane/fastlane/README.md
+android/keys/upload-key.properties
