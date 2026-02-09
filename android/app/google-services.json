@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "334911523244",
+    "project_id": "playly-9bf28",
+    "storage_bucket": "playly-9bf28.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:334911523244:android:60c2dc0582944b1f225209",
+        "android_client_info": {
+          "package_name": "mni.siddique.playly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAraX6lkPnxpsc9kFikuvJwwB4crbW2wEk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

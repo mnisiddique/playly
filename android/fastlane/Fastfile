@@ -1,0 +1,153 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+require_relative '../../script/ruby/shared_script'
+
+# def release_note_android
+#   result = sh("gen release-note android", capture: true)
+#   return result.strip
+# end
+
+# def version_name_android
+#   result = sh("gen sem-ver android", capture: true)
+#   return result.strip
+# end
+
+
+def build_artifact(artifact, buildNo) 
+  sh("cd ..")
+
+  buildName = "--build-name=#{version_name}"
+  buildNumber = "--build-number=#{buildNo}"
+
+  cmdElement = [
+      'flutter',
+      'build',
+      artifact,
+      '--release', 
+      '-t', 
+      'lib/core/app/main.dart',
+      buildName,
+      buildNumber,
+  ]
+  sh(cmdElement.join(' '))
+end
+
+def app_id()
+  return "1:334911523244:android:60c2dc0582944b1f225209"
+end
+
+
+def build_artifact_path(artifact)
+    artifactPath = "build/app/outputs/flutter-apk"
+    artifactName= "app-release.#{artifact}"
+    relative_path = File.expand_path("../../#{artifactPath}/#{artifactName}")
+    return relative_path
+end
+
+default_platform(:android)
+
+platform :android do
+
+  desc "Increments version file build number by 1"
+  lane :increment_version_file_build_number do |options|
+    file_path = File.expand_path("../version.properties", __dir__)
+    if File.exist?(file_path)
+      File.readlines(file_path).each do |line|
+        next if line.strip.start_with?('#') || !line.include?('=')
+        key, value = line.split('=')
+        props[key.strip] = value.strip
+      end
+    end
+    version_code = props["versionCode"].to_i + 1
+  end
+  
+  desc "Increments playstore build number by 1"
+  lane :increment_playstore_build_number do |options|
+    versionCodes = google_play_track_version_codes(track: 'internal')
+    version_code = versionCodes.nil? || versionCodes.empty? ? 1 : versionCodes.first + 1 
+  end
+
+  lane :to_firebase do |options|
+
+    appId = app_id()
+    artifact = "apk"
+    buildNo = increment_firebase_build_number(appId: appId)
+    build_artifact( 
+       artifact,
+       buildNo,
+    )
+    path = build_artifact_path(artifact)
+    release = firebase_app_distribution(
+      app: appId,
+      android_artifact_path: path,
+      release_notes: release_note(api),
+      groups: 'celloscope-testers',
+      service_credentials_file: google_drive_sa_cred,
+      debug: false
+    )
+
+    deployment_info = {
+      platform_name: "Firebase",
+      release_name: "#{flavor}_#{api}_#{version_name}(#{buildNo})",
+      download_link: release[:binaryDownloadUri]
+    }
+    file_path = File.expand_path("../deployment_info.json", __dir__)
+    write_deployment_info(deployment_info, file_path)
+  end
+
+  lane :to_google_drive do |options|
+    appId = app_id()
+    artifact = "aab"
+    buildNo = increment_version_file_build_number
+    build_artifact( 
+       artifact,
+       buildNo,
+    )
+    path = build_artifact_path(artifact)
+    date_string = Time.now.strftime("%d_%m_%Y") # e.g., 23_05_2026
+  
+    folder_name = "playly_v#{version_name.gsub('.', '_')}(#{buildNo})_#{date_string}"
+    upload_to_google_drive(
+      service_account_key: google_drive_sa_cred,
+      drive_url: "https://drive.google.com/drive/folders/1laG8Jd7I6QPeqHNOKh8LjGMBCv_MD10P", # The ID of the 'artifact' folder
+      folder_title: folder_name, # This creates a NEW subfolder inside 'deliverable'
+      upload_files: [path]
+    )
+    file_path = File.expand_path("../version.properties", __dir__)
+    write_version_info(version_name, buildNo, file_path)
+  end
+  
+  # lane :to_playstore do |options|
+  #   flavor = options[:flavor]
+  #   artifact = "aab"
+  #   buildNumber = increment_playstore_build_number
+  #   versionName = version_name
+  #   build_artifact( 
+  #      artifact,
+  #      buildNumber,
+  #      flavor
+  #   )
+  #   path = build_artifact_path(flavor, artifact)
+  #   upload_to_play_store(
+  #     track: 'internal', 
+  #     version_code: buildNumber,
+  #     version_name: versionName,
+  #     aab: path,
+  #     skip_upload_images: true, 
+  #     skip_upload_screenshots: true 
+  #   )
+  # end
+
+end

@@ -30,6 +30,17 @@ if (releaseKeystorePropertiesFile.exists()) {
     logger.warn("Warning: debug-key.properties not found at ${releaseKeystorePropertiesFile.path}")
 }
 
+val versionPropertiesFile = rootProject.file("keys/upload-key.properties")
+val versionProperties = Properties()
+
+
+if (versionPropertiesFile.exists()) {
+    versionProperties.load(FileInputStream(versionPropertiesFile))
+} else {
+    // Optional: Print a warning if the file is missing
+    logger.warn("Warning: debug-key.properties not found at ${versionPropertiesFile.path}")
+}
+
 android {
     namespace = "mni.siddique.playly"
     compileSdk = flutter.compileSdkVersion
@@ -49,8 +60,8 @@ android {
 
         minSdk = 27
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        versionCode = versionProperties.getByName("versionCode)
+        versionName = versionProperties.getByName("versionName)
     }
     signingConfigs {
         create("release") {

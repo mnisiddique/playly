@@ -1,0 +1,43 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Firebase Deploy",
+            "type": "shell",
+            "command": "script/shell/firebase_deploy.sh",
+            "problemMatcher": [],
+            "options": {
+                "shell": {
+                    "executable": "/bin/zsh",
+                    "args": [
+                        "-i",
+                        "-c"
+                    ]
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Drive Deploy",
+            "type": "shell",
+            "command": "script/shell/google_drive_deploy.sh",
+            "problemMatcher": [],
+            "options": {
+                "shell": {
+                    "executable": "/bin/zsh",
+                    "args": [
+                        "-i",
+                        "-c"
+                    ]
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+    ]
+}
