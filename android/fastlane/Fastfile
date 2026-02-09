@@ -109,13 +109,13 @@ platform :android do
       android_artifact_path: path,
       release_notes: release_note(),
       groups: 'celloscope-testers',
-      service_credentials_file: google_drive_sa_cred,
+      service_credentials_file: fire_sa_cred,
       debug: false
     )
 
     deployment_info = {
       platform_name: "Firebase",
-      release_name: "#{flavor}_#{api}_#{version_name}(#{buildNo})",
+      release_name: "#{version_name}(#{buildNo})",
       download_link: release[:binaryDownloadUri]
     }
     file_path = File.expand_path("../deployment_info.json", __dir__)
