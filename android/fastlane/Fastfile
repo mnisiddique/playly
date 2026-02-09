@@ -108,7 +108,6 @@ platform :android do
       app: appId,
       android_artifact_path: path,
       release_notes: release_note(),
-      groups: 'celloscope-testers',
       service_credentials_file: fire_sa_cred,
       debug: false
     )
