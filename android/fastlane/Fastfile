@@ -50,7 +50,11 @@ end
 
 
 def build_artifact_path(artifact)
-    artifactPath = "build/app/outputs/flutter-apk"
+    artifactPath = {
+      "apk" => "build/app/outputs/flutter-apk",
+      "aab" => "build/app/outputs/bundle/release",
+    }
+    artifactPath = artifactPath[artifact]
     artifactName= "app-release.#{artifact}"
     relative_path = File.expand_path("../../#{artifactPath}/#{artifactName}")
     return relative_path
@@ -63,6 +67,7 @@ platform :android do
   desc "Increments version file build number by 1"
   lane :increment_version_file_build_number do |options|
     file_path = File.expand_path("../version.properties", __dir__)
+    props = {}
     if File.exist?(file_path)
       File.readlines(file_path).each do |line|
         next if line.strip.start_with?('#') || !line.include?('=')
@@ -71,6 +76,16 @@ platform :android do
       end
     end
     version_code = props["versionCode"].to_i + 1
+  end
+
+  desc "Increments firebase build number by 1"
+  lane :increment_firebase_build_number do |options|
+    appId = options[:appId]
+    latest_release = firebase_app_distribution_get_latest_release(
+      app: appId,
+      service_credentials_file: fire_sa_cred
+    )
+    version_code = latest_release.nil? ? 1 : latest_release[:buildVersion].to_i + 1 
   end
   
   desc "Increments playstore build number by 1"
@@ -92,7 +107,7 @@ platform :android do
     release = firebase_app_distribution(
       app: appId,
       android_artifact_path: path,
-      release_notes: release_note(api),
+      release_notes: release_note(),
       groups: 'celloscope-testers',
       service_credentials_file: google_drive_sa_cred,
       debug: false
@@ -119,10 +134,10 @@ platform :android do
     date_string = Time.now.strftime("%d_%m_%Y") # e.g., 23_05_2026
   
     folder_name = "playly_v#{version_name.gsub('.', '_')}(#{buildNo})_#{date_string}"
+    puts "path: #{path}"
     upload_to_google_drive(
-      service_account_key: google_drive_sa_cred,
-      drive_url: "https://drive.google.com/drive/folders/1laG8Jd7I6QPeqHNOKh8LjGMBCv_MD10P", # The ID of the 'artifact' folder
-      folder_title: folder_name, # This creates a NEW subfolder inside 'deliverable'
+      drive_keyfile: google_drive_sa_cred,
+      folder_id: "1Z2niE-lrBQ3tV2LCJfUdRqiN_kJ-JuCn", # The ID of the 'artifact' folder
       upload_files: [path]
     )
     file_path = File.expand_path("../version.properties", __dir__)

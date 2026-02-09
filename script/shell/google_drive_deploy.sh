@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-./cleanup.sh
+./script/shell/cleanup.sh
+source ./script/shell/ruby_path_detector.sh
 
 cd android
 bundle exec fastlane to_google_drive

@@ -30,7 +30,7 @@ if (releaseKeystorePropertiesFile.exists()) {
     logger.warn("Warning: debug-key.properties not found at ${releaseKeystorePropertiesFile.path}")
 }
 
-val versionPropertiesFile = rootProject.file("keys/upload-key.properties")
+val versionPropertiesFile = rootProject.file("version.properties")
 val versionProperties = Properties()
 
 
@@ -60,8 +60,8 @@ android {
 
         minSdk = 27
         targetSdk = flutter.targetSdkVersion
-        versionCode = versionProperties.getByName("versionCode)
-        versionName = versionProperties.getByName("versionName)
+        versionCode = versionProperties.getProperty("versionCode").toInt()
+        versionName = versionProperties.getProperty("versionName")
     }
     signingConfigs {
         create("release") {
