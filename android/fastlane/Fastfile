@@ -133,14 +133,17 @@ platform :android do
     date_string = Time.now.strftime("%d_%m_%Y") # e.g., 23_05_2026
   
     folder_name = "playly_v#{version_name.gsub('.', '_')}(#{buildNo})_#{date_string}"
-    puts "path: #{path}"
-    upload_to_google_drive(
-      drive_keyfile: google_drive_sa_cred,
-      folder_id: "1Z2niE-lrBQ3tV2LCJfUdRqiN_kJ-JuCn", # The ID of the 'artifact' folder
-      upload_files: [path]
-    )
-    file_path = File.expand_path("../version.properties", __dir__)
-    write_version_info(version_name, buildNo, file_path)
+    parent_id = "1Z2niE-lrBQ3tV2LCJfUdRqiN_kJ-JuCn"
+
+    begin
+      sh "rclone copy '#{path}' 'gdrive:#{folder_name}' --drive-root-folder-id #{parent_id}"
+      UI.success("Successfully uploaded to Drive in folder: #{folder_name}")
+      file_path = File.expand_path("../version.properties", __dir__)
+      write_version_info(version_name, buildNo, file_path)
+    rescue => e
+      UI.error("Rclone upload failed. Check if rclone is installed and 'gdrive' remote is configured.")
+      raise e
+    end
   end
   
   # lane :to_playstore do |options|

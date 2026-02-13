@@ -5,11 +5,6 @@ def fire_sa_cred
     return relative_path
 end
 
-def google_drive_sa_cred
-    relative_path = File.expand_path("../../google_drive_sa_cred.json")
-    return relative_path
-end
-
 
 def release_note(extra_note = nil)
   result = sh("gen release-note", capture: true).strip
